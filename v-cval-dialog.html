@@ -37,7 +37,6 @@
 </dom-module>
 
 <script>
-    // element registration
     CvalDialog = Polymer({
         is: "v-cval-dialog",
 
@@ -71,7 +70,7 @@
 
         computeUrl: function (licenseKey) {
             //return "https://tools.vaadin.com/vaadin-license-server/licenses/" + licenseKey;
-            return "http://localhost:8080/mockserver/" + licenseKey;
+            return "http://localhost:8080/components/vaadin-license-checker/test-license/" + licenseKey;
         },
 
         handleErrorFromServer: function (event) {

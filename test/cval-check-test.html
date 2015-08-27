@@ -43,7 +43,7 @@
             checker = new CvalCheck();
             checker.licenseUrlBase = "http://localhost:8080/mockserver/";
 
-            checker.addEventListener("cval-check-loadready", function () {
+            checker.addEventListener("license-check-done", function () {
                 expect(document.querySelector('v-cval-box')).to.not.exist;
                 done();
             });
