@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../v-cval-check.html">
+
+<dom-module id="simple-component">
+    <style>
+
+    </style>
+    <template>
+        <v-cval-check license-key="12345678-1234-abcd-1234-12345678abcd"></v-cval-check>
+    </template>
+</dom-module>
+
+<script>
+    // element registration
+    Polymer({
+        is: "simple-component",
+
+        attached: function () {
+            var hostname = window.location.hostname;
+            if (hostname === "localhost" || hostname === "127.0.0.1") {
+                this.importHref("../v-cval-check.html", function () {
+                    var newElem = document.createElement("v-cval-check");
+                    Polymer.dom(this).appendChild(newElem);
+                });
+            }
+        }
+    });
+</script>

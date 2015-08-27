@@ -1,0 +1,105 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="v-cval-box.html">
+
+<script>
+    CvalCheck = Polymer({
+        is: "v-cval-check",
+
+        properties: {
+            licenseKey: String,
+            licenseUrlBase: {
+                type: String,
+                //TODO "https://tools.vaadin.com/vaadin-license-server/licenses/"
+                value: "http://localhost:8080/mockserver/"
+            },
+            licenseUrl: {
+                type: String,
+                computed: 'computeUrl(licenseUrlBase, licenseKey)',
+                observer: 'licenseUrlChanged'
+            }
+        },
+
+        attached: function () {
+            if (!window.localStorage.getItem("vaadin.charts.developer.license.key")) {
+                var newElem = new CvalBox("Unlicensed copy", "error");
+                Polymer.dom(this).appendChild(newElem);
+            } else {
+                this.licenseKey = window.localStorage.getItem("vaadin.charts.developer.license.key");
+                var licenseUrl = this.computeUrl(this.licenseUrlBase, this.licenseKey);
+                console.log("attached with license url" + licenseUrl);
+
+                var client = new XMLHttpRequest();
+
+                client.open("GET", licenseUrl, true);
+
+                client.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+
+                client.onerror = this.handleErrorFromServer.bind(this);
+
+                client.onload = this.handleResultFromServer.bind(this);
+
+                client.send("");
+            }
+        },
+
+        computeUrl: function (licenseUrlBase, licenseKey) {
+            return licenseUrlBase + licenseKey;
+        },
+
+        licenseUrlChanged: function (newValue, oldValue) {
+            console.log("License URL changed to " + newValue);
+        },
+
+        handleErrorFromServer: function (event) {
+            var response = event.target;
+            console.log("License request failed, status: " + response.status + " failure text: " + this.responseText);
+            var newElem = new CvalBox("Unlicensed copy", "error");
+            Polymer.dom(this).appendChild(newElem);
+
+            this.fireLoadReadyEvent()
+        },
+
+        handleResultFromServer: function (event) {
+            function isValidChartsLicense(resultJson) {
+                return resultJson.product.name === "vaadin-charts" &&
+                        resultJson.product.version === 3 && !resultJson.expired;
+
+            };
+
+            var response = event.target;
+
+            console.log("Result status: " + response.status + " result text: " + response.responseText);
+
+            if (response.status != 200) {
+                console.log("Show invalid license dialog");
+
+                var newElem = new CvalBox("Unlicensed copy", "error");
+                Polymer.dom(this).appendChild(newElem);
+            } else {
+                var result = JSON.parse(response.responseText);
+
+                if ("evaluation" === result.type) {
+                    //show evaluation box
+                    console.log("Show evaluation box");
+                    var newElem = new CvalBox("Evaluation copy", "evaluation");
+                    Polymer.dom(this).appendChild(newElem);
+
+                } else if (!isValidChartsLicense(result)) {
+                    //show unlicensed / expired dialog
+                    console.log("Show expired dialog")
+
+                    var newElem = new CvalBox("Unlicensed copy", "error");
+                    Polymer.dom(this).appendChild(newElem);
+                }
+            }
+
+            this.fireLoadReadyEvent()
+        },
+
+        fireLoadReadyEvent: function() {
+            this.fire("cval-check-loadready");
+        }
+
+
+    });
+</script>

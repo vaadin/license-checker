@@ -1,0 +1,21 @@
+{
+  "name": "vaadin-license-checker",
+  "version": "1.0.0",
+  "authors": [
+    "Vaadin Ltd"
+  ],
+  "license": "Apache-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "web-component-tester": "*"
+  }
+}

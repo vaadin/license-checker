@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../v-cval-check.html">
+</head>
+<body>
+
+<script>
+
+    var validKey = "12345678-1234-abcd-1234-12345678abcd";
+    var checker;
+
+    suite('<v-cval-check>', function () {
+
+        setup(function () {
+            window.localStorage.clear();
+        });
+
+        teardown(function () {
+            if(checker) {
+                checker.remove();
+            }
+        });
+
+        test('shows error box when license is missing', function (done) {
+            checker = new CvalCheck();
+            document.body.appendChild(checker);
+
+            flush(function () {
+                expect(document.querySelector('v-cval-box')).to.exist;
+                done();
+            });
+        });
+
+        test('keeps quiet when license exists', function (done) {
+            window.localStorage.setItem("vaadin.charts.developer.license.key", validKey);
+            checker = new CvalCheck();
+            checker.licenseUrlBase = "http://localhost:8080/mockserver/";
+
+            checker.addEventListener("cval-check-loadready", function () {
+                expect(document.querySelector('v-cval-box')).to.not.exist;
+                done();
+            });
+
+            document.body.appendChild(checker);
+        });
+    });
+</script>
+
+</body>
+</html>
