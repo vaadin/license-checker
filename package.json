@@ -8,13 +8,6 @@
   "devDependencies": {
     "bower": "^1.4.1",
     "gulp": "^3.8.11",
-    "gulp-live-server": "0.0.25",
-    "express": "~4.0.0",
-    "body-parser": "~1.0.1",
-    "cors": "^2.7.1",
     "web-component-tester": "^3.3.9"
-  },
-  "dependencies": {
-
   }
 }
