@@ -1,9 +1,9 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="v-cval-dialog.html">
+<link rel="import" href="v-license-dialog.html">
 
-<dom-module id="v-cval-box">
+<dom-module id="v-license-box">
     <style>
-        #cval-box-content {
+        #license-box-content {
             position: fixed;
             bottom: 0;
             cursor: pointer;
@@ -11,24 +11,24 @@
             width: 50px;
         }
 
-        #cval-box-content.evaluation {
+        #license-box-content.evaluation {
             left: 0;
             background-color: lightblue;
         }
 
-        #cval-box-content.error {
+        #license-box-content.error {
             left: 50%;
             background-color: red;
         }
     </style>
     <template>
-        <div id="cval-box-content" on-click="onClick">[[header]]</div>
+        <div id="license-box-content" on-click="onClick">[[header]]</div>
     </template>
 </dom-module>
 
 <script>
-    CvalBox = Polymer({
-        is: "v-cval-box",
+    LicenseBox = Polymer({
+        is: "v-license-box",
 
         properties: {
             header: String,
@@ -47,14 +47,14 @@
         },
 
         onErrorTypeChange: function(newValue, oldValue) {
-            console.log("Cval box type changed to " + newValue);
-            this.$['cval-box-content'].className = newValue;
+            console.log("License box type changed to " + newValue);
+            this.$['license-box-content'].className = newValue;
         },
 
         onClick: function() {
             console.log("Box clicked");
 
-            var newElem = new CvalDialog(this.header);
+            var newElem = new LicenseDialog(this.header);
             Polymer.dom(this.parentElement).appendChild(newElem);
             this.remove();
         }

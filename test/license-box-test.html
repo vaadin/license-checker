@@ -7,20 +7,22 @@
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../v-cval-box.html">
+    <link rel="import" href="../v-license-box.html">
 </head>
 <body>
 
-<v-cval-box id="errorbox" header="Test header" error-type="error"></v-cval-box>
+<v-license-box id="errorbox" header="Test header" error-type="error"></v-license-box>
 
-<v-cval-box id="errorbox-forclick" header="Test header" error-type="error"></v-cval-box>
+<v-license-box id="errorbox-forclick" header="Test header" error-type="error"></v-license-box>
+
+<v-license-box id="evalbox" header="Test header" error-type="evaluation"></v-license-box>
 
 <script>
-    suite('<v-cval-box>', function () {
+    suite('<v-license-box>', function () {
 
         test('appends type as a CSS class', function () {
-            var errorBoxContent = document.querySelector('#errorbox #cval-box-content');
-            var evalBoxContent = document.querySelector('#evalbox #cval-box-content');
+            var errorBoxContent = document.querySelector('#errorbox #license-box-content');
+            var evalBoxContent = document.querySelector('#evalbox #license-box-content');
 
             assert.equal(errorBoxContent.className, 'error');
             assert.equal(evalBoxContent.className, 'evaluation');
@@ -31,7 +33,7 @@
 
             errorBoxForClick.onClick();
 
-            expect(document.querySelector('#v-cval-dialog')).to.exist;
+            expect(document.querySelector('#v-license-dialog')).to.exist;
         });
     });
 </script>

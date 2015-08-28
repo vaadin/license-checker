@@ -1,6 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 
-<dom-module id="v-cval-dialog">
+<dom-module id="v-license-dialog">
     <style>
         :host {
             position: absolute;
@@ -11,15 +11,15 @@
             background-color: gray;
         }
 
-        #v-cval-dialog-header {
+        #v-license-dialog-header {
             color: white;
             background-color: black;
         }
     </style>
     <template>
-        <div id="v-cval-dialog">
-            <div id="v-cval-dialog-header">{{header}}</div>
-            <div id="v-cval-dialog-explanation">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        <div id="v-license-dialog">
+            <div id="v-license-dialog-header">{{header}}</div>
+            <div id="v-license-dialog-explanation">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
                 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
                 ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
                 voluptate
@@ -27,18 +27,18 @@
                 in
                 culpa qui officia deserunt mollit anim id est laborum.
             </div>
-            <div id="v-cval-dialog-input"><input id="v-cval-dialog-input-field" type="text"/>
+            <div id="v-license-dialog-input"><input id="v-license-dialog-input-field" type="text"/>
                 <button on-click="onClick">Submit</button>
             </div>
-            <div id="v-cval-dialog-license-link"><a href="https://vaadin.com/pro-tools">Lorem ipsum dolor sit amet</a>
+            <div id="v-license-dialog-license-link"><a href="https://vaadin.com/pro-tools">Lorem ipsum dolor sit amet</a>
             </div>
         </div>
     </template>
 </dom-module>
 
 <script>
-    CvalDialog = Polymer({
-        is: "v-cval-dialog",
+    LicenseDialog = Polymer({
+        is: "v-license-dialog",
 
         properties: {
             header: String
@@ -50,7 +50,7 @@
 
         onClick: function () {
             //ugly copying
-            var licenseKey = this.$['v-cval-dialog-input-field'].value;
+            var licenseKey = this.$['v-license-dialog-input-field'].value;
 
             var licenseUrl = this.computeUrl(licenseKey);
 

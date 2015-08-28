@@ -7,19 +7,19 @@
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../v-cval-check.html">
+    <link rel="import" href="../v-license-checker.html">
 </head>
 <body>
 
 <script>
-    suite('<v-cval-check>', function () {
+    suite('<v-license-check>', function () {
 
         var validKey = "12345678-1234-abcd-1234-12345678abcd";
         var checker;
 
         setup(function () {
             window.localStorage.clear();
-            checker = new CvalCheck();
+            checker = new LicenseCheck();
         });
 
         teardown(function () {
@@ -32,7 +32,7 @@
             document.body.appendChild(checker);
 
             flush(function () {
-                expect(document.querySelector('v-cval-box')).to.exist;
+                expect(document.querySelector('v-license-box')).to.exist;
                 done();
             });
         });
@@ -42,7 +42,7 @@
             checker.licenseUrlBase = "http://localhost:8080/mockserver/";
 
             checker.addEventListener("license-check-done", function () {
-                expect(document.querySelector('v-cval-box')).to.not.exist;
+                expect(document.querySelector('v-license-box')).to.not.exist;
                 done();
             });
 

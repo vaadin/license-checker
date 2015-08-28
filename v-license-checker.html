@@ -1,9 +1,9 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="v-cval-box.html">
+<link rel="import" href="v-license-box.html">
 
 <script>
-    CvalCheck = Polymer({
-        is: "v-cval-check",
+    LicenseCheck = Polymer({
+        is: "v-license-check",
 
         // simple global state to detect multiple instances
         instances: {},
@@ -39,7 +39,7 @@
                         this._checkLicenseKey();
 
                     } else {
-                        var newElem = new CvalBox("Unlicensed copy", "error");
+                        var newElem = new LicenseBox("Unlicensed copy", "error");
                         Polymer.dom(this).appendChild(newElem);
                     }
                 }
@@ -70,7 +70,7 @@
         _handleErrorFromServer: function (event) {
             var response = event.target;
             console.log("License request failed, status: " + response.status + " failure text: " + this.responseText);
-            var newElem = new CvalBox("Unlicensed copy", "error");
+            var newElem = new LicenseBox("Unlicensed copy", "error");
             Polymer.dom(this).appendChild(newElem);
 
             this._fireLoadReadyEvent()
@@ -84,7 +84,7 @@
             if (response.status != 200) {
                 console.log("Show invalid license dialog");
 
-                var newElem = new CvalBox("Unlicensed copy", "error");
+                var newElem = new LicenseBox("Unlicensed copy", "error");
                 Polymer.dom(this).appendChild(newElem);
 
             } else {
@@ -93,14 +93,14 @@
                 if ("evaluation" === result.type) {
                     //show evaluation box
                     console.log("Show evaluation box");
-                    var newElem = new CvalBox("Evaluation copy", "evaluation");
+                    var newElem = new LicenseBox("Evaluation copy", "evaluation");
                     Polymer.dom(this).appendChild(newElem);
 
                 } else if (!isValidLicense(result.product.name, result.product.version)) {
                     //show unlicensed / expired dialog
                     console.log("Show expired dialog")
 
-                    var newElem = new CvalBox("Unlicensed copy", "error");
+                    var newElem = new LicenseBox("Unlicensed copy", "error");
                     Polymer.dom(this).appendChild(newElem);
                 }
             }
