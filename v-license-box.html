@@ -1,28 +1,24 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="v-license-dialog.html">
 
 <dom-module id="v-license-box">
     <style>
         #license-box-content {
             position: fixed;
-            bottom: 0;
+            top: 0;
+            right: 0;
             cursor: pointer;
-            height: 50px;
-            width: 50px;
         }
 
-        #license-box-content.evaluation {
-            left: 0;
+        #license-box-content.trial {
             background-color: lightblue;
         }
 
-        #license-box-content.error {
-            left: 50%;
+        #license-box-content.unlicensed {
             background-color: red;
         }
     </style>
     <template>
-        <div id="license-box-content" on-click="onClick">[[header]]</div>
+        <div id="license-box-content" class$="[[type]]" on-click="_close">[[content]]</div>
     </template>
 </dom-module>
 
@@ -30,33 +26,32 @@
     LicenseBox = Polymer({
         is: "v-license-box",
 
+        contents: {
+            unlicensed: 'Unlicensed copy of Vaadin ',
+            trial: ""
+        },
+
         properties: {
-            header: String,
-
-
-            errorType: {
-                //error or evaluation
+            content: {
                 type: String,
-                observer: 'onErrorTypeChange'
-            }
+                computed: '_computeContent(type, productName)'
+            },
+            type: String,
+            productName: String
         },
 
-        factoryImpl: function(header, errorType) {
-            this.header = header;
-            this.errorType = errorType;
+        factoryImpl: function (type, productName) {
+            this.type = type;
+            this.productName = productName;
         },
 
-        onErrorTypeChange: function(newValue, oldValue) {
-            console.log("License box type changed to " + newValue);
-            this.$['license-box-content'].className = newValue;
-        },
-
-        onClick: function() {
-            console.log("Box clicked");
-
-            var newElem = new LicenseDialog(this.header);
-            Polymer.dom(this.parentElement).appendChild(newElem);
+        _close: function () {
+            this.fire('v-license-box-close', {type: this.type});
             this.remove();
+        },
+
+        _computeContent: function(type, productName) {
+            return this.contents[type] + productName;
         }
     });
 </script>

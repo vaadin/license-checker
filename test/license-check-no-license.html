@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../v-license-checker.html">
+</head>
+<body>
+
+<script>
+    suite('scenario: no license', function () {
+
+        var checker;
+
+        setup(function () {
+            window.localStorage.clear();
+            checker = new LicenseCheck();
+        });
+
+        teardown(function () {
+            if(checker) {
+                checker.remove();
+            }
+        });
+
+        test('checker shows unlicensed dialog on load when license is missing', function (done) {
+            document.body.appendChild(checker);
+
+            flush(function () {
+                expect(document.querySelector('v-license-dialog')).to.exist;
+                expect(document.querySelector('v-license-dialog')).to.equal()
+                done();
+            });
+        });
+
+        test('dialog minimizes to a box when clicking x', function (done) {
+            document.body.appendChild(checker);
+
+            flush(function () {
+                document.querySelector('#v-license-dialog-close').click();
+                expect(document.querySelector('v-license-box')).to.exist;
+                expect(document.querySelector('v-license-dialog')).to.not.exist;
+                done();
+            });
+
+
+            document.body.appendChild(checker);
+        });
+
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="v-license-box.html">
+<link rel="import" href="v-license-dialog.html">
 
 <script>
     LicenseCheck = Polymer({
@@ -7,6 +8,13 @@
 
         // simple global state to detect multiple instances
         instances: {},
+
+        licenseTypes: {
+            VALID: "valid",
+            UNLICENSED: "unlicensed",
+            TRIAL: "trial",
+            EXPIRED: "expired"
+        },
 
         properties: {
             licenseKey: String,
@@ -39,8 +47,7 @@
                         this._checkLicenseKey();
 
                     } else {
-                        var newElem = new LicenseBox("Unlicensed copy", "error");
-                        Polymer.dom(this).appendChild(newElem);
+                        this._showLicenseDialog(this.licenseTypes.UNLICENSED);
                     }
                 }
             }
@@ -82,9 +89,9 @@
             console.log("Result status: " + response.status + " result text: " + response.responseText);
 
             if (response.status != 200) {
-                console.log("Show invalid license dialog");
+                console.log("Show unlicensed  dialog");
 
-                var newElem = new LicenseBox("Unlicensed copy", "error");
+                var newElem = new LicenseDialog("Unlicensed copy", "error");
                 Polymer.dom(this).appendChild(newElem);
 
             } else {
@@ -96,7 +103,7 @@
                     var newElem = new LicenseBox("Evaluation copy", "evaluation");
                     Polymer.dom(this).appendChild(newElem);
 
-                } else if (!isValidLicense(result.product.name, result.product.version)) {
+                } else if (!_isValidLicense(result.product.name, result.product.version)) {
                     //show unlicensed / expired dialog
                     console.log("Show expired dialog")
 
@@ -124,11 +131,33 @@
         },
 
         _exists: function (value) {
-            return value !== null && value !== undefined
+            return value !== null && value !== undefined && value !== "";
         },
 
         _computeStorageKey: function (productName) {
             return "vaadin." + productName + ".developer.license.key";
+        },
+
+
+        _licenseDialogClosed: function (event) {
+            this._showLicenseBox(event.detail.type);
+        },
+
+        _licenseBoxClosed: function (event) {
+            this._showLicenseDialog(event.detail.type);
+        },
+
+        _showLicenseDialog: function (type) {
+            var licenseDialog = new LicenseDialog(type, this.productName);
+            licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
+            Polymer.dom(document.body).appendChild(licenseDialog);
+        },
+
+        _showLicenseBox: function (type) {
+            var licenseBox = new LicenseBox(type, this.productName);
+            licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
+            Polymer.dom(document.body).appendChild(licenseBox);
         }
+
     });
 </script>

@@ -2,35 +2,59 @@
 
 <dom-module id="v-license-dialog">
     <style>
+
         :host {
-            position: absolute;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            left: 0;
+            top: 0;
+            z-index: 10000;
+            background-color: black;
+            opacity: 0.72;
+        }
+
+        #v-license-dialog {
+            position: fixed;
             width: 20%;
             left: 0;
             right: 0;
+            top: 20%;
             margin: 0 auto;
-            background-color: gray;
+            z-index: 20000;
+            background-color: white;
+
+        }
+
+        #v-license-dialog {
+            border: 1px solid black;
         }
 
         #v-license-dialog-header {
-            color: white;
-            background-color: black;
+            color: black;
+            background-color: white;
+            border-bottom: 1px solid black;
+        }
+
+        #v-license-dialog-header #v-license-dialog-close {
+            cursor: pointer;
+            float: right;
+        }
+
+        #licenseDialogExplanation {
+
         }
     </style>
     <template>
-        <div id="v-license-dialog">
-            <div id="v-license-dialog-header">{{header}}</div>
-            <div id="v-license-dialog-explanation">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-                in
-                culpa qui officia deserunt mollit anim id est laborum.
-            </div>
-            <div id="v-license-dialog-input"><input id="v-license-dialog-input-field" type="text"/>
-                <button on-click="onClick">Submit</button>
-            </div>
-            <div id="v-license-dialog-license-link"><a href="https://vaadin.com/pro-tools">Lorem ipsum dolor sit amet</a>
+        <div class="modality-curtain">
+            <div id="v-license-dialog">
+                <div id="v-license-dialog-header"><span>[[header]]</span><span id="v-license-dialog-close"
+                                                                               on-click="_close">X</span></div>
+                <div id="licenseDialogExplanation"></div>
+                <div id="v-license-dialog-input">
+                    <input id="v-license-dialog-input-field" type="text"/>
+                    <button on-click="_submit">Submit</button>
+                </div>
             </div>
         </div>
     </template>
@@ -40,72 +64,56 @@
     LicenseDialog = Polymer({
         is: "v-license-dialog",
 
+        headers: {
+            unlicensed: "Unlicensed copy of Vaadin ",
+            trial: "trial"
+        },
+
+        contents: {
+            unlicensed: 'To use Vaadin %s in development, each developers needs to have a valid license. Please <a href="https://vaadin.com/pro/licenses" target="_blank"> get a license from vaadin.com</a>, then enter your license key here:',
+            trial: "trial"
+        },
+
         properties: {
-            header: String
-        },
-
-        constructor: function (header) {
-            this.header = header;
-        },
-
-        onClick: function () {
-            //ugly copying
-            var licenseKey = this.$['v-license-dialog-input-field'].value;
-
-            var licenseUrl = this.computeUrl(licenseKey);
-
-            var client = new XMLHttpRequest();
-
-            client.open("GET", licenseUrl, true);
-
-            client.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-
-            client.onerror = this.handleErrorFromServer.bind(this);
-
-            client.onload = this.handleResultFromServer.bind(this);
-
-            client.send("");
-
-        },
-
-        computeUrl: function (licenseKey) {
-            //return "https://tools.vaadin.com/vaadin-license-server/licenses/" + licenseKey;
-            return "http://localhost:8080/components/vaadin-license-checker/test-license/" + licenseKey;
-        },
-
-        handleErrorFromServer: function (event) {
-            console.log("License request failed, status: " + this.status + " failure text: " + this.responseText);
-        },
-
-        handleResultFromServer: function (event) {
-            //ugly copying
-            function isValidChartsLicense(resultJson) {
-                return resultJson.product.name === "vaadin-charts" &&
-                        resultJson.product.version === 3 && !resultJson.expired;
-
-            };
-
-            var response = event.target;
-
-            console.log("Result status: " + response.status + " result text: " + response.responseText);
-
-            if (response.status != 200) {
-                console.log("Show invalid license dialog");
-            } else {
-                var result = JSON.parse(response.responseText);
-
-                if ("evaluation" === result.type) {
-                    //show evaluation box
-                    console.log("Show evaluation box");
-
-                } else if (!isValidChartsLicense(result)) {
-                    //show unlicensed / expired dialog
-                    console.log("Show expired dialog")
-                }else {
-                    window.localStorage.setItem("vaadin.charts.developer.license.key", result.licenseKey);
-                    this.remove();
-                }
+            type: String,
+            productName: String,
+            header: {
+                type: String,
+                computed: '_computeHeader(type, productName)'
+            },
+            content: {
+                type: String,
+                observer: '_contentChanged',
+                computed: '_computeContent(type, productName)'
             }
+        },
+
+        factoryImpl: function (type, productName) {
+            this.type = type;
+            this.productName = productName;
+        },
+
+        _contentChanged: function (value) {
+            this.$.licenseDialogExplanation.innerHTML = value;
+        },
+
+        _submit: function () {
+
+        },
+
+        _close: function () {
+            this.fire('v-license-dialog-close', {type: this.type});
+            this.remove();
+        },
+
+        _computeHeader: function (type, productName) {
+            return this.headers[type] + productName;
+
+        },
+
+        _computeContent: function (type, productName) {
+            return this.content = this.contents[type].replace(/%s/, productName);
+
         }
 
     });
