@@ -5,6 +5,9 @@
     CvalCheck = Polymer({
         is: "v-cval-check",
 
+        // simple global state to detect multiple instances
+        instances: {},
+
         properties: {
             licenseKey: String,
             licenseUrlBase: {
@@ -23,18 +26,22 @@
             }
         },
 
-        ready: function () {
-            if (this._isLocalhost()) {
-                if (this._exists(this.licenseKey)) {
-                    this._checkLicenseKey();
+        attached: function () {
+            if (!this._exists(this.instances[this.storageKey])) {
+                this.instances[this.storageKey] = this;
 
-                } else if (this._exists(window.localStorage.getItem(this.storageKey))) {
-                    this.licenseKey = window.localStorage.getItem(this.storageKey);
-                    this._checkLicenseKey();
+                if (this._isLocalhost()) {
+                    if (this._exists(this.licenseKey)) {
+                        this._checkLicenseKey();
 
-                } else {
-                    var newElem = new CvalBox("Unlicensed copy", "error");
-                    Polymer.dom(this).appendChild(newElem);
+                    } else if (this._exists(window.localStorage.getItem(this.storageKey))) {
+                        this.licenseKey = window.localStorage.getItem(this.storageKey);
+                        this._checkLicenseKey();
+
+                    } else {
+                        var newElem = new CvalBox("Unlicensed copy", "error");
+                        Polymer.dom(this).appendChild(newElem);
+                    }
                 }
             }
         },
@@ -116,11 +123,11 @@
             this.fire("license-check-done");
         },
 
-        _exists: function(value) {
+        _exists: function (value) {
             return value !== null && value !== undefined
         },
 
-        _computeStorageKey: function(productName) {
+        _computeStorageKey: function (productName) {
             return "vaadin." + productName + ".developer.license.key";
         }
     });

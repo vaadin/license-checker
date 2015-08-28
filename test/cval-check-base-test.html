@@ -12,14 +12,14 @@
 <body>
 
 <script>
-
-    var validKey = "12345678-1234-abcd-1234-12345678abcd";
-    var checker;
-
     suite('<v-cval-check>', function () {
+
+        var validKey = "12345678-1234-abcd-1234-12345678abcd";
+        var checker;
 
         setup(function () {
             window.localStorage.clear();
+            checker = new CvalCheck();
         });
 
         teardown(function () {
@@ -29,7 +29,6 @@
         });
 
         test('shows error box when license is missing', function (done) {
-            checker = new CvalCheck();
             document.body.appendChild(checker);
 
             flush(function () {
@@ -40,7 +39,6 @@
 
         test('keeps quiet when license exists', function (done) {
             window.localStorage.setItem("vaadin.charts.developer.license.key", validKey);
-            checker = new CvalCheck();
             checker.licenseUrlBase = "http://localhost:8080/mockserver/";
 
             checker.addEventListener("license-check-done", function () {
