@@ -1,5 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="v-license-box.html">
 <link rel="import" href="v-license-dialog.html">
@@ -13,6 +14,15 @@
                            use-raw="true">
 
         </iron-localstorage>
+
+        <iron-ajax
+                id="licenseRequest"
+                url="[[licenseUrl]]"
+                handle-as="json"
+                on-response="_handleResultFromServer"
+                on-error="_handleErrorFromServer"
+                debounce-duration="300">
+        </iron-ajax>
     </template>
 
     <script>
@@ -96,17 +106,9 @@
                 var licenseUrl = this._computeUrl(this.licenseUrlBase, key);
                 console.log("checking with license URL " + licenseUrl);
 
-                var client = new XMLHttpRequest();
+                this.$.licenseRequest.url = licenseUrl;
 
-                client.open("GET", licenseUrl, true);
-
-                client.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-
-                client.onerror = this._handleErrorFromServer.bind(this);
-
-                client.onload = this._handleResultFromServer.bind(this);
-
-                client.send("");
+                this.$.licenseRequest.generateRequest();
             },
 
             _computeUrl: function (licenseUrlBase, licenseKey) {
@@ -114,36 +116,31 @@
             },
 
             _handleErrorFromServer: function (event) {
-                var response = event.target;
-                console.log("License request failed, status: " + response.status + " failure text: " + this.responseText);
-                var newElem = new LicenseBox("Unlicensed copy", "error");
-                Polymer.dom(this).appendChild(newElem);
+                var response = event.detail.request;
+                console.log("License request failed, status: " + response.status + " failure text: " + this.response);
+                this._showLicenseDialog(this.licenseTypes.UNLICENSED)
 
                 this._fireLoadReadyEvent()
             },
 
             _handleResultFromServer: function (event) {
-                var response = event.target;
+                var response = event.detail;
 
-                console.log("Result status: " + response.status + " result text: " + response.responseText);
+                console.log("Result status: " + response.status + " result text: " + JSON.stringify(response.response));
 
                 if (response.status != 200) {
-                    console.log("Show unlicensed  dialog");
-
-                   this._showLicenseDialog(this.licenseTypes.UNLICENSED)
+                    this._showLicenseDialog(this.licenseTypes.UNLICENSED)
 
                 } else {
-                    var result = JSON.parse(response.responseText);
+                    var result = response.response;
 
                     if ("evaluation" === result.type) {
-                        //show evaluation box
-                        console.log("Show evaluation box");
                         var newElem = new LicenseBox(this.licenseTypes.TRIAL, this.productName);
                         Polymer.dom(this).appendChild(newElem);
 
                     } else if (!this._isValidLicense(result.product.name, result.product.version)) {
-                        //show unlicensed
                         this._showLicenseDialog(this.licenseTypes.UNLICENSED);
+
                     } else {
                         //success
                         if (this.licenseKey !== result.licenseKey) {
