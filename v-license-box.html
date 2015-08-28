@@ -27,8 +27,8 @@
         is: "v-license-box",
 
         contents: {
-            unlicensed: 'Unlicensed copy of Vaadin ',
-            trial: ""
+            unlicensed: 'Unlicensed copy of Vaadin %s',
+            trial: 'Vaadin %s trial license'
         },
 
         properties: {
@@ -50,8 +50,8 @@
             this.remove();
         },
 
-        _computeContent: function(type, productName) {
-            return this.contents[type] + productName;
+        _computeContent: function (type, productName) {
+            return this.contents[type].replace(/%s/, productName);
         }
     });
 </script>

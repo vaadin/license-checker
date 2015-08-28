@@ -65,13 +65,13 @@
         is: "v-license-dialog",
 
         headers: {
-            unlicensed: "Unlicensed copy of Vaadin ",
-            trial: "trial"
+            unlicensed: "Unlicensed copy of Vaadin %s",
+            trial: "Vaadin %s trial license"
         },
 
         contents: {
-            unlicensed: 'To use Vaadin %s in development, each developers needs to have a valid license. Please <a href="https://vaadin.com/pro/licenses" target="_blank"> get a license from vaadin.com</a>, then enter your license key here:',
-            trial: "trial"
+            unlicensed: 'To use Vaadin %s in development, each developer needs to have a valid license. Please <a href="https://vaadin.com/pro/licenses" target="_blank"> get a license from vaadin.com</a>, then enter your license key here:',
+            trial: 'You are currently using Vaadin %s with a trial license, which will expire in %d days. You can <a href="https://vaadin.com/pro/licenses" target="_blank"> visit vaadin.com to get a paid license</a>, then enter your license key here:'
         },
 
         properties: {
@@ -107,12 +107,11 @@
         },
 
         _computeHeader: function (type, productName) {
-            return this.headers[type] + productName;
-
+            return this.headers[type].replace(/%s/, productName);
         },
 
         _computeContent: function (type, productName) {
-            return this.content = this.contents[type].replace(/%s/, productName);
+            return this.contents[type].replace(/%s/, productName);
 
         }
 
