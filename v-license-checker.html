@@ -9,6 +9,10 @@
         // simple global state to detect multiple instances
         instances: {},
 
+        licenseDialog: undefined,
+
+        licenseBox: undefined,
+
         licenseTypes: {
             VALID: "valid",
             UNLICENSED: "unlicensed",
@@ -50,6 +54,21 @@
                         this._showLicenseDialog(this.licenseTypes.UNLICENSED);
                     }
                 }
+            }
+        },
+
+        detached: function () {
+            if (this.licenseBox) {
+                this.licenseBox.remove();
+                this.licenseBox = undefined;
+            }
+            if (this.licenseDialog) {
+                this.licenseDialog.remove();
+                this.licenseDialog = undefined;
+            }
+
+            if(this.instances[this.storageKey] === this) {
+                this.instances[this.storageKey] = undefined;
             }
         },
 
@@ -148,15 +167,23 @@
         },
 
         _showLicenseDialog: function (type) {
-            var licenseDialog = new LicenseDialog(type, this.productName);
-            licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
-            Polymer.dom(document.body).appendChild(licenseDialog);
+            if (this.licenseDialog) {
+                this.licenseDialog.remove();
+                this.licenseDialog = {};
+            }
+            this.licenseDialog = new LicenseDialog(type, this.productName);
+            this.licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
+            Polymer.dom(document.body).appendChild(this.licenseDialog);
         },
 
         _showLicenseBox: function (type) {
-            var licenseBox = new LicenseBox(type, this.productName);
-            licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
-            Polymer.dom(document.body).appendChild(licenseBox);
+            if (this.licenseBox) {
+                this.licenseBox.remove();
+                this.licenseDialog = {};
+            }
+            this.licenseBox = new LicenseBox(type, this.productName);
+            this.licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
+            Polymer.dom(document.body).appendChild(this.licenseBox);
         }
 
     });

@@ -19,6 +19,8 @@
         setup(function () {
             window.localStorage.clear();
             checker = new LicenseCheck();
+            checker.productName = 'some-product';
+            document.body.appendChild(checker);
         });
 
         teardown(function () {
@@ -28,27 +30,32 @@
         });
 
         test('checker shows unlicensed dialog on load when license is missing', function (done) {
-            document.body.appendChild(checker);
-
             flush(function () {
                 expect(document.querySelector('v-license-dialog')).to.exist;
-                expect(document.querySelector('v-license-dialog')).to.equal()
+                expect(document.querySelector('v-license-dialog #v-license-dialog-header span').innerText).to.equal('Unlicensed copy of Vaadin some-product');
                 done();
             });
         });
 
         test('dialog minimizes to a box when clicking x', function (done) {
-            document.body.appendChild(checker);
-
             flush(function () {
                 document.querySelector('#v-license-dialog-close').click();
                 expect(document.querySelector('v-license-box')).to.exist;
                 expect(document.querySelector('v-license-dialog')).to.not.exist;
+                expect(document.querySelector('v-license-box #license-box-content').innerText).to.equal('Unlicensed copy of Vaadin some-product');
                 done();
             });
+        });
 
-
-            document.body.appendChild(checker);
+        test('box shows dialog when clicked', function (done) {
+            flush(function () {
+                document.querySelector('#v-license-dialog-close').click();
+                document.querySelector('#license-box-content').click();
+                expect(document.querySelector('v-license-dialog')).to.exist;
+                expect(document.querySelector('v-license-box')).to.not.exist;
+                expect(document.querySelector('v-license-dialog #v-license-dialog-header span').innerText).to.equal('Unlicensed copy of Vaadin some-product');
+                done();
+            });
         });
 
 

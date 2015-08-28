@@ -11,11 +11,11 @@
 </head>
 <body>
 
-<v-license-box id="errorbox" header="Test header" error-type="error"></v-license-box>
+<v-license-box id="errorbox" type="unlicensed" product-name="some-product"></v-license-box>
 
-<v-license-box id="errorbox-forclick" header="Test header" error-type="error"></v-license-box>
+<v-license-box id="errorbox-forclick" type="unlicensed"></v-license-box>
 
-<v-license-box id="evalbox" header="Test header" error-type="evaluation"></v-license-box>
+<v-license-box id="evalbox" product-name="some-product" type="trial"></v-license-box>
 
 <script>
     suite('<v-license-box>', function () {
@@ -24,16 +24,20 @@
             var errorBoxContent = document.querySelector('#errorbox #license-box-content');
             var evalBoxContent = document.querySelector('#evalbox #license-box-content');
 
-            assert.equal(errorBoxContent.className, 'error');
-            assert.equal(evalBoxContent.className, 'evaluation');
+            expect(errorBoxContent.className).to.contain('unlicensed');
+            expect(evalBoxContent.className).to.contain('trial');
         });
 
-        test('shows dialog on click', function () {
+        test('fires event on click', function (done) {
             var errorBoxForClick = document.querySelector('#errorbox-forclick');
 
-            errorBoxForClick.onClick();
+            errorBoxForClick.addEventListener('v-license-box-close', new function() {
+                done();
+            });
 
-            expect(document.querySelector('#v-license-dialog')).to.exist;
+            errorBoxForClick.click();
+
+
         });
     });
 </script>

@@ -16,9 +16,6 @@
 
 <script>
 
-    var validKey = "12345678-1234-abcd-1234-12345678abcd";
-    var checker;
-
     suite('<v-license-check>', function () {
 
         setup(function () {
@@ -26,8 +23,8 @@
         });
 
         test('shows only one box when multiple checkers for the same product exist in the DOM', function () {
-            expect(document.querySelector('v-license-box')).to.exist;
-            expect(document.querySelectorAll('v-license-box').length).to.equal(1);
+            expect(document.querySelector('v-license-dialog')).to.exist;
+            expect(document.querySelectorAll('v-license-dialog').length).to.equal(1);
         });
     });
 </script>
