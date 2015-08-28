@@ -1,0 +1,25 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+
+<dom-module id="v-license-notification">
+
+    <style>
+        #notificationText {
+            color: white;
+            background-color: grey;
+            padding: 10px;
+        }
+    </style>
+
+    <template>
+        <div id="notificationText">License key accepted</div>
+    </template>
+
+    <script>
+        LicenseNotification = Polymer({
+            is: "v-license-notification",
+
+            behaviors: [Polymer.IronOverlayBehavior]
+        });
+    </script>
+</dom-module>

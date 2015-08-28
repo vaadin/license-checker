@@ -1,190 +1,230 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-localstorage/iron-localstorage.html">
+
 <link rel="import" href="v-license-box.html">
 <link rel="import" href="v-license-dialog.html">
+<link rel="import" href="v-license-notification.html">
 
-<script>
-    LicenseCheck = Polymer({
-        is: "v-license-check",
+<dom-module id="v-license-check">
 
-        // simple global state to detect multiple instances
-        instances: {},
+    <template>
+        <iron-localstorage name="[[storageKey]]"
+                           value="{{licenseKey}}"
+                           use-raw="true">
 
-        licenseDialog: undefined,
+        </iron-localstorage>
+    </template>
 
-        licenseBox: undefined,
+    <script>
+        LicenseCheck = Polymer({
+            is: "v-license-check",
 
-        licenseTypes: {
-            VALID: "valid",
-            UNLICENSED: "unlicensed",
-            TRIAL: "trial",
-            EXPIRED: "expired"
-        },
+            // simple global state to detect multiple instances
+            instances: {},
 
-        properties: {
-            licenseKey: String,
-            licenseUrlBase: {
-                type: String,
-                value: "https://tools.vaadin.com/vaadin-license-server/licenses/"
+            licenseDialog: undefined,
+
+            licenseBox: undefined,
+
+            notification: undefined,
+
+            licenseTypes: {
+                VALID: "valid",
+                UNLICENSED: "unlicensed",
+                TRIAL: "trial",
+                EXPIRED: "expired"
             },
-            licenseUrl: {
-                type: String,
-                computed: '_computeUrl(licenseUrlBase, licenseKey)'
+
+            properties: {
+                licenseKey: String,
+                licenseUrlBase: {
+                    type: String,
+                    value: "https://tools.vaadin.com/vaadin-license-server/licenses/"
+                },
+                licenseUrl: {
+                    type: String,
+                    computed: '_computeUrl(licenseUrlBase, licenseKey)'
+                },
+                productName: String,
+                productVersion: Number,
+                storageKey: {
+                    type: String,
+                    computed: '_computeStorageKey(productName)'
+                }
             },
-            productName: String,
-            productVersion: Number,
-            storageKey: {
-                type: String,
-                computed: '_computeStorageKey(productName)'
-            }
-        },
 
-        attached: function () {
-            if (!this._exists(this.instances[this.storageKey])) {
-                this.instances[this.storageKey] = this;
+            attached: function () {
+                if (!this._exists(this.instances[this.storageKey])) {
+                    this.instances[this.storageKey] = this;
 
-                if (this._isLocalhost()) {
-                    if (this._exists(this.licenseKey)) {
-                        this._checkLicenseKey();
+                    if (this._isLocalhost()) {
+                        if (this._exists(this.licenseKey)) {
+                            this._checkLicenseKey();
 
-                    } else if (this._exists(window.localStorage.getItem(this.storageKey))) {
-                        this.licenseKey = window.localStorage.getItem(this.storageKey);
-                        this._checkLicenseKey();
-
-                    } else {
-                        this._showLicenseDialog(this.licenseTypes.UNLICENSED);
+                        } else {
+                            this._showLicenseDialog(this.licenseTypes.UNLICENSED);
+                        }
                     }
                 }
-            }
-        },
+            },
 
-        detached: function () {
-            if (this.licenseBox) {
-                this.licenseBox.remove();
-                this.licenseBox = undefined;
-            }
-            if (this.licenseDialog) {
-                this.licenseDialog.remove();
-                this.licenseDialog = undefined;
-            }
+            detached: function () {
+                if (this.licenseBox) {
+                    this.licenseBox.remove();
+                    this.licenseBox = undefined;
+                }
+                if (this.licenseDialog) {
+                    this.licenseDialog.remove();
+                    this.licenseDialog = undefined;
+                }
+                if (this.notification) {
+                    this.notification.remove();
+                    this.notification = undefined;
+                }
 
-            if(this.instances[this.storageKey] === this) {
-                this.instances[this.storageKey] = undefined;
-            }
-        },
+                if (this.instances[this.storageKey] === this) {
+                    this.instances[this.storageKey] = undefined;
+                }
+            },
 
-        _checkLicenseKey: function () {
-            var licenseUrl = this._computeUrl(this.licenseUrlBase, this.licenseKey);
-            console.log("checking with license url " + licenseUrl);
+            _checkLicenseKey: function (key) {
+                if (arguments.length === 0) {
+                    //no-args call
+                    key = this.licenseKey;
+                }
 
-            var client = new XMLHttpRequest();
+                var licenseUrl = this._computeUrl(this.licenseUrlBase, key);
+                console.log("checking with license URL " + licenseUrl);
 
-            client.open("GET", licenseUrl, true);
+                var client = new XMLHttpRequest();
 
-            client.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+                client.open("GET", licenseUrl, true);
 
-            client.onerror = this._handleErrorFromServer.bind(this);
+                client.setRequestHeader("Content-Type", "application/json;charset=utf-8");
 
-            client.onload = this._handleResultFromServer.bind(this);
+                client.onerror = this._handleErrorFromServer.bind(this);
 
-            client.send("");
-        },
+                client.onload = this._handleResultFromServer.bind(this);
 
-        _computeUrl: function (licenseUrlBase, licenseKey) {
-            return licenseUrlBase + licenseKey;
-        },
+                client.send("");
+            },
 
-        _handleErrorFromServer: function (event) {
-            var response = event.target;
-            console.log("License request failed, status: " + response.status + " failure text: " + this.responseText);
-            var newElem = new LicenseBox("Unlicensed copy", "error");
-            Polymer.dom(this).appendChild(newElem);
+            _computeUrl: function (licenseUrlBase, licenseKey) {
+                return licenseUrlBase + licenseKey;
+            },
 
-            this._fireLoadReadyEvent()
-        },
-
-        _handleResultFromServer: function (event) {
-            var response = event.target;
-
-            console.log("Result status: " + response.status + " result text: " + response.responseText);
-
-            if (response.status != 200) {
-                console.log("Show unlicensed  dialog");
-
-                var newElem = new LicenseDialog("Unlicensed copy", "error");
+            _handleErrorFromServer: function (event) {
+                var response = event.target;
+                console.log("License request failed, status: " + response.status + " failure text: " + this.responseText);
+                var newElem = new LicenseBox("Unlicensed copy", "error");
                 Polymer.dom(this).appendChild(newElem);
 
-            } else {
-                var result = JSON.parse(response.responseText);
+                this._fireLoadReadyEvent()
+            },
 
-                if ("evaluation" === result.type) {
-                    //show evaluation box
-                    console.log("Show evaluation box");
-                    var newElem = new LicenseBox("Evaluation copy", "evaluation");
-                    Polymer.dom(this).appendChild(newElem);
+            _handleResultFromServer: function (event) {
+                var response = event.target;
 
-                } else if (!_isValidLicense(result.product.name, result.product.version)) {
-                    //show unlicensed / expired dialog
-                    console.log("Show expired dialog")
+                console.log("Result status: " + response.status + " result text: " + response.responseText);
 
-                    var newElem = new LicenseBox("Unlicensed copy", "error");
-                    Polymer.dom(this).appendChild(newElem);
+                if (response.status != 200) {
+                    console.log("Show unlicensed  dialog");
+
+                   this._showLicenseDialog(this.licenseTypes.UNLICENSED)
+
+                } else {
+                    var result = JSON.parse(response.responseText);
+
+                    if ("evaluation" === result.type) {
+                        //show evaluation box
+                        console.log("Show evaluation box");
+                        var newElem = new LicenseBox(this.licenseTypes.TRIAL, this.productName);
+                        Polymer.dom(this).appendChild(newElem);
+
+                    } else if (!this._isValidLicense(result.product.name, result.product.version)) {
+                        //show unlicensed
+                        this._showLicenseDialog(this.licenseTypes.UNLICENSED);
+                    } else {
+                        //success
+                        if (this.licenseKey !== result.licenseKey) {
+                            this._showSuccessNotification();
+                            this.licenseKey = result.licenseKey;
+                        }
+                    }
                 }
+
+                this._fireLoadReadyEvent()
+            },
+
+            _isLocalhost: function () {
+                var hostname = window.location.hostname;
+                return (hostname === "localhost" || hostname === "127.0.0.1");
+            },
+
+            _isValidLicense: function (productName, productVersion) {
+                return productName === this.productName &&
+                        productVersion === this.productVersion;
+
+            },
+
+            _fireLoadReadyEvent: function () {
+                this.fire("license-check-done");
+            },
+
+            _exists: function (value) {
+                return value !== null && value !== undefined && value !== "";
+            },
+
+            _computeStorageKey: function (productName) {
+                return "vaadin." + productName + ".developer.license.key";
+            },
+
+
+            _licenseDialogClosed: function (event) {
+                this._showLicenseBox(event.detail.type);
+            },
+
+            _licenseBoxClosed: function (event) {
+                this._showLicenseDialog(event.detail.type);
+            },
+
+            _licenseBoxSubmit: function (event) {
+                //check the key without saving it first
+                this._checkLicenseKey(event.detail.licenseKey);
+            },
+
+            _showLicenseDialog: function (type) {
+                if (this.licenseDialog) {
+                    this.licenseDialog.remove();
+                    this.licenseDialog = undefined;
+                }
+                this.licenseDialog = new LicenseDialog(type, this.productName);
+                this.licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
+                this.licenseDialog.addEventListener('v-license-dialog-submit', this._licenseBoxSubmit.bind(this));
+                Polymer.dom(document.body).appendChild(this.licenseDialog);
+            },
+
+            _showLicenseBox: function (type) {
+                if (this.licenseBox) {
+                    this.licenseBox.remove();
+                    this.licenseDialog = undefined;
+                }
+                this.licenseBox = new LicenseBox(type, this.productName);
+
+                this.licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
+                Polymer.dom(document.body).appendChild(this.licenseBox);
+            },
+
+            _showSuccessNotification: function () {
+                if (this.notification) {
+                    this.notification.remove();
+                    this.notification = undefined;
+                }
+                this.notification = new LicenseNotification();
+                Polymer.dom(document.body).appendChild(this.notification);
+                this.notification.open();
             }
 
-            this._fireLoadReadyEvent()
-        },
-
-        _isLocalhost: function () {
-            var hostname = window.location.hostname;
-            return (hostname === "localhost" || hostname === "127.0.0.1");
-        },
-
-        _isValidLicense: function (productName, productVersion) {
-            return productName === this.productName &&
-                    productVersion === this.productVersion && !resultJson.expired;
-
-        },
-
-        _fireLoadReadyEvent: function () {
-            this.fire("license-check-done");
-        },
-
-        _exists: function (value) {
-            return value !== null && value !== undefined && value !== "";
-        },
-
-        _computeStorageKey: function (productName) {
-            return "vaadin." + productName + ".developer.license.key";
-        },
-
-
-        _licenseDialogClosed: function (event) {
-            this._showLicenseBox(event.detail.type);
-        },
-
-        _licenseBoxClosed: function (event) {
-            this._showLicenseDialog(event.detail.type);
-        },
-
-        _showLicenseDialog: function (type) {
-            if (this.licenseDialog) {
-                this.licenseDialog.remove();
-                this.licenseDialog = {};
-            }
-            this.licenseDialog = new LicenseDialog(type, this.productName);
-            this.licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
-            Polymer.dom(document.body).appendChild(this.licenseDialog);
-        },
-
-        _showLicenseBox: function (type) {
-            if (this.licenseBox) {
-                this.licenseBox.remove();
-                this.licenseDialog = {};
-            }
-            this.licenseBox = new LicenseBox(type, this.productName);
-            this.licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
-            Polymer.dom(document.body).appendChild(this.licenseBox);
-        }
-
-    });
-</script>
+        });
+    </script>
+</dom-module>

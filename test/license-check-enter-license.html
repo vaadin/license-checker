@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../v-license-checker.html">
+</head>
+<body>
+
+<script>
+    suite('scenario: getting a license', function () {
+
+        var checker;
+
+        setup(function () {
+            window.localStorage.clear();
+
+            checker = new LicenseCheck();
+            checker.productName = 'some-product';
+            checker.licenseUrlBase = "http://localhost:8080/components/vaadin-license-checker/test-license/";
+            checker.productName = 'some-product';
+            checker.productVersion = 2;
+        });
+
+        teardown(function () {
+            if (checker) {
+                checker.remove();
+            }
+        });
+
+        test('checker shows success notification on valid license', function (done) {
+            checker.addEventListener('license-check-done', function () {
+                expect(document.querySelector('v-license-notification')).to.exist;
+                expect(document.querySelector('v-license-box')).to.not.exist;
+                expect(document.querySelector('v-license-dialog')).to.not.exist;
+                done();
+            });
+
+            document.body.appendChild(checker);
+
+            flush(function () {
+                document.querySelector('v-license-dialog #licenseDialogInput').value = '12345678-1234-abcd-1234-12345678abcd';
+                document.querySelector('v-license-dialog button').click();
+            });
+        });
+
+        test("checker doesn't show anything when valid license in local storage", function (done) {
+            window.localStorage.setItem("vaadin.some-product.developer.license.key", "12345678-1234-abcd-1234-12345678abcd");
+
+            checker.addEventListener('license-check-done', function () {
+                expect(document.querySelector('v-license-notification')).to.not.exist;
+                expect(document.querySelector('v-license-box')).to.not.exist;
+                expect(document.querySelector('v-license-dialog')).to.not.exist;
+                done();
+            });
+
+            //this is needed since iron-localstorage is optimized in a way
+            //that it will load value at the end of microtask
+            flush(function () {
+                document.body.appendChild(checker);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

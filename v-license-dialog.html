@@ -52,7 +52,7 @@
                                                                                on-click="_close">X</span></div>
                 <div id="licenseDialogExplanation"></div>
                 <div id="v-license-dialog-input">
-                    <input id="v-license-dialog-input-field" type="text"/>
+                    <input id="licenseDialogInput" type="text"/>
                     <button on-click="_submit">Submit</button>
                 </div>
             </div>
@@ -98,7 +98,8 @@
         },
 
         _submit: function () {
-
+            this.fire('v-license-dialog-submit', {licenseKey: this.$.licenseDialogInput.value});
+            this.remove();
         },
 
         _close: function () {
