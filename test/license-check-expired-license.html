@@ -12,7 +12,7 @@
 <body>
 
 <script>
-    suite('scenario: getting a license', function () {
+    suite('scenario: expired license', function () {
 
         var checker;
 
@@ -21,10 +21,11 @@
             checker = new LicenseCheck();
             checker.productName = 'some-product';
             checker.productVersion = 2;
-            checker.licenseKey = '12345678-1234-abcd-1234-12345678expired';
             checker.licenseUrlBase = "http://localhost:8080/components/vaadin-license-checker/test-license/";
 
-            document.body.appendChild(checker);
+            //use local storage instead of property since some browsers
+            //load in a different order
+            window.localStorage.setItem('vaadin.some-product.developer.license.key','12345678-1234-abcd-1234-12345678expired');
         });
 
         teardown(function () {
@@ -42,18 +43,11 @@
                     done();
                 });
             });
+
+            document.body.appendChild(checker);
         });
 
         test('user can enter valid license to expired license dialog', function (done) {
-            var firstCheck = function () {
-                document.querySelector('#license-box-content').click();
-                document.querySelector('v-license-dialog #licenseDialogInput').value = '12345678-1234-abcd-1234-12345678abcd';
-                document.querySelector('v-license-dialog button').click();
-
-                checker.removeEventListener('license-check-done', firstCheck);
-                checker.addEventListener('license-check-done', secondCheck);
-            };
-
             var secondCheck = function () {
                 flush(function () {
                     expect(document.querySelector('v-license-notification').style.display).to.not.equal('none');
@@ -63,7 +57,19 @@
                 });
             };
 
+            var firstCheck = function () {
+                checker.removeEventListener('license-check-done', firstCheck);
+                checker.addEventListener('license-check-done', secondCheck);
+                document.querySelector('#license-box-content').click();
+                document.querySelector('v-license-dialog #licenseDialogInput').value = '12345678-1234-abcd-1234-12345678abcd';
+                document.querySelector('v-license-dialog button').click();
+            };
+
+
+
             checker.addEventListener('license-check-done', firstCheck);
+
+            document.body.appendChild(checker);
         });
     });
 </script>

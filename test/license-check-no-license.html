@@ -32,7 +32,7 @@
         test('checker shows unlicensed dialog on load when license is missing', function (done) {
             flush(function () {
                 expect(document.querySelector('v-license-dialog')).to.exist;
-                expect(document.querySelector('v-license-dialog #v-license-dialog-header span').innerText).to.equal('Unlicensed copy of Vaadin some-product');
+                expect(document.querySelector('v-license-dialog #v-license-dialog-header span').textContent).to.equal('Unlicensed copy of Vaadin some-product');
                 done();
             });
         });
@@ -43,7 +43,7 @@
                 flush(function () {
                     expect(document.querySelector('v-license-box').style.display).to.not.equal('none');
                     expect(document.querySelector('v-license-dialog').style.display).to.equal('none');
-                    expect(document.querySelector('v-license-box #license-box-content').innerText).to.equal('Unlicensed copy of Vaadin some-product');
+                    expect(document.querySelector('v-license-box #license-box-content').textContent).to.equal('Unlicensed copy of Vaadin some-product');
                     done();
                 });
             });
@@ -56,7 +56,7 @@
                 flush(function () {
                     expect(document.querySelector('v-license-dialog').style.display).to.not.equal('none');
                     expect(document.querySelector('v-license-box').style.display).to.equal('none');
-                    expect(document.querySelector('v-license-dialog #v-license-dialog-header span').innerText).to.equal('Unlicensed copy of Vaadin some-product');
+                    expect(document.querySelector('v-license-dialog #v-license-dialog-header span').textContent).to.equal('Unlicensed copy of Vaadin some-product');
                     done();
                 });
             });
