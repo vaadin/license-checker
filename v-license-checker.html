@@ -128,22 +128,24 @@
 
                 console.log("Result status: " + response.status + " result text: " + JSON.stringify(response.response));
 
-                if (response.status != 200) {
+                var result = response.response;
+
+                //result is either invalid somehow, expired, evaluation or successful
+                if (response.status != 200 || !this._isValidLicense(result.product.name, result.product.version)) {
                     this._showLicenseDialog(this.licenseTypes.UNLICENSED)
 
                 } else {
-                    var result = response.response;
+                    if (true === result.expired) {
+                        this._showLicenseBox(this.licenseTypes.EXPIRED);
 
-                    if ("evaluation" === result.type) {
-                        var newElem = new LicenseBox(this.licenseTypes.TRIAL, this.productName);
-                        Polymer.dom(this).appendChild(newElem);
-
-                    } else if (!this._isValidLicense(result.product.name, result.product.version)) {
-                        this._showLicenseDialog(this.licenseTypes.UNLICENSED);
+                    } else if ("evaluation" === result.type) {
+                        this._showLicenseBox(this.licenseTypes.TRIAL);
 
                     } else {
                         //success
                         if (this.licenseKey !== result.licenseKey) {
+                            //user entered key to dialog
+                            //show success notification and save value
                             this._showSuccessNotification();
                             this.licenseKey = result.licenseKey;
                         }
@@ -161,7 +163,6 @@
             _isValidLicense: function (productName, productVersion) {
                 return productName === this.productName &&
                         productVersion === this.productVersion;
-
             },
 
             _fireLoadReadyEvent: function () {

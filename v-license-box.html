@@ -16,6 +16,10 @@
         #license-box-content.unlicensed {
             background-color: red;
         }
+
+        #license-box-content.expired {
+            background-color: coral;
+        }
     </style>
     <template>
         <div id="license-box-content" class$="[[type]]" on-click="_close">[[content]]</div>
@@ -28,7 +32,8 @@
 
         contents: {
             unlicensed: 'Unlicensed copy of Vaadin %s',
-            trial: 'Vaadin %s trial license'
+            trial: 'Vaadin %s trial license',
+            expired: 'Vaadin %s license expired'
         },
 
         properties: {

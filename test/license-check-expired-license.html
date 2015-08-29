@@ -18,11 +18,13 @@
 
         setup(function () {
             window.localStorage.clear();
-
             checker = new LicenseCheck();
             checker.productName = 'some-product';
-            checker.licenseUrlBase = "http://localhost:8080/components/vaadin-license-checker/test-license/";
             checker.productVersion = 2;
+            checker.licenseKey = '12345678-1234-abcd-1234-12345678expired';
+            checker.licenseUrlBase = "http://localhost:8080/components/vaadin-license-checker/test-license/";
+
+            document.body.appendChild(checker);
         });
 
         teardown(function () {
@@ -31,37 +33,33 @@
             }
         });
 
-        test('checker shows success notification on valid license', function (done) {
+        test('checker shows expired box on load when license is expired', function (done) {
             checker.addEventListener('license-check-done', function () {
+                expect(document.querySelector('v-license-dialog')).to.not.exist;
+                expect(document.querySelector('v-license-box')).to.exist;
+                expect(document.querySelector('v-license-box #license-box-content').className).to.contain('expired');
+                done();
+            });
+        });
+
+        test('user can enter valid license to expired license dialog', function (done) {
+            var firstCheck = function () {
+                document.querySelector('#license-box-content').click();
+                document.querySelector('v-license-dialog #licenseDialogInput').value = '12345678-1234-abcd-1234-12345678abcd';
+                document.querySelector('v-license-dialog button').click();
+
+                checker.removeEventListener('license-check-done', firstCheck);
+                checker.addEventListener('license-check-done', secondCheck);
+            };
+
+            var secondCheck = function () {
                 expect(document.querySelector('v-license-notification')).to.exist;
                 expect(document.querySelector('v-license-box')).to.not.exist;
                 expect(document.querySelector('v-license-dialog')).to.not.exist;
                 done();
-            });
+            };
 
-            document.body.appendChild(checker);
-
-            flush(function () {
-                document.querySelector('v-license-dialog #licenseDialogInput').value = '12345678-1234-abcd-1234-12345678abcd';
-                document.querySelector('v-license-dialog button').click();
-            });
-        });
-
-        test("checker doesn't show anything when valid license in local storage", function (done) {
-            window.localStorage.setItem("vaadin.some-product.developer.license.key", "12345678-1234-abcd-1234-12345678abcd");
-
-            checker.addEventListener('license-check-done', function () {
-                expect(document.querySelector('v-license-notification')).to.not.exist;
-                expect(document.querySelector('v-license-box')).to.not.exist;
-                expect(document.querySelector('v-license-dialog')).to.not.exist;
-                done();
-            });
-
-            //this is needed since iron-localstorage is optimized in a way
-            //that it will load value at the end of microtask
-            flush(function () {
-                document.body.appendChild(checker);
-            });
+            checker.addEventListener('license-check-done', firstCheck);
         });
     });
 </script>
