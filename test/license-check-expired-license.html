@@ -35,10 +35,12 @@
 
         test('checker shows expired box on load when license is expired', function (done) {
             checker.addEventListener('license-check-done', function () {
-                expect(document.querySelector('v-license-dialog')).to.not.exist;
-                expect(document.querySelector('v-license-box')).to.exist;
-                expect(document.querySelector('v-license-box #license-box-content').className).to.contain('expired');
-                done();
+                flush(function () {
+                    expect(document.querySelector('v-license-dialog')).to.not.exist;
+                    expect(document.querySelector('v-license-box').style.display).to.not.equal('none');
+                    expect(document.querySelector('v-license-box #license-box-content').className).to.contain('expired');
+                    done();
+                });
             });
         });
 
@@ -53,10 +55,12 @@
             };
 
             var secondCheck = function () {
-                expect(document.querySelector('v-license-notification')).to.exist;
-                expect(document.querySelector('v-license-box')).to.not.exist;
-                expect(document.querySelector('v-license-dialog')).to.not.exist;
-                done();
+                flush(function () {
+                    expect(document.querySelector('v-license-notification').style.display).to.not.equal('none');
+                    expect(document.querySelector('v-license-box').style.display).to.equal('none');
+                    expect(document.querySelector('v-license-dialog').style.display).to.equal('none');
+                    done();
+                });
             };
 
             checker.addEventListener('license-check-done', firstCheck);

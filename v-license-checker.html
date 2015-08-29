@@ -192,34 +192,38 @@
             },
 
             _showLicenseDialog: function (type) {
-                if (this.licenseDialog) {
-                    this.licenseDialog.remove();
-                    this.licenseDialog = undefined;
+                if (!this.licenseDialog) {
+                    this.licenseDialog = new LicenseDialog();
+                    Polymer.dom(document.body).appendChild(this.licenseDialog);
+                    this.licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
+                    this.licenseDialog.addEventListener('v-license-dialog-submit', this._licenseBoxSubmit.bind(this));
                 }
-                this.licenseDialog = new LicenseDialog(type, this.productName);
-                this.licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
-                this.licenseDialog.addEventListener('v-license-dialog-submit', this._licenseBoxSubmit.bind(this));
-                Polymer.dom(document.body).appendChild(this.licenseDialog);
+
+                this.licenseDialog.type = type;
+                this.licenseDialog.productName =  this.productName;
+
+                this.licenseDialog.open();
             },
 
             _showLicenseBox: function (type) {
-                if (this.licenseBox) {
-                    this.licenseBox.remove();
-                    this.licenseDialog = undefined;
+                if (!this.licenseBox) {
+                    this.licenseBox = new LicenseBox();
+                    Polymer.dom(document.body).appendChild(this.licenseBox);
+                    this.licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
                 }
-                this.licenseBox = new LicenseBox(type, this.productName);
 
-                this.licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
-                Polymer.dom(document.body).appendChild(this.licenseBox);
+                this.licenseBox.type = type;
+                this.licenseBox.productName = this.productName;
+
+                this.licenseBox.open();
             },
 
             _showSuccessNotification: function () {
-                if (this.notification) {
-                    this.notification.remove();
-                    this.notification = undefined;
+                if (!this.notification) {
+                    this.notification = new LicenseNotification();
+                    Polymer.dom(document.body).appendChild(this.notification);
                 }
-                this.notification = new LicenseNotification();
-                Polymer.dom(document.body).appendChild(this.notification);
+
                 this.notification.open();
             }
 

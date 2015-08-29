@@ -33,10 +33,12 @@
 
         test('checker shows success notification on valid license', function (done) {
             checker.addEventListener('license-check-done', function () {
-                expect(document.querySelector('v-license-notification')).to.exist;
-                expect(document.querySelector('v-license-box')).to.not.exist;
-                expect(document.querySelector('v-license-dialog')).to.not.exist;
-                done();
+                flush(function () {
+                    expect(document.querySelector('v-license-notification').style.display).to.not.equal('none');
+                    expect(document.querySelector('v-license-box')).to.not.exist;
+                    expect(document.querySelector('v-license-dialog').style.display).to.equal('none');
+                    done();
+                });
             });
 
             document.body.appendChild(checker);

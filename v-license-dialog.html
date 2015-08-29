@@ -1,32 +1,14 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
 
 <dom-module id="v-license-dialog">
     <style>
 
         :host {
             position: fixed;
-            height: 100%;
-            width: 100%;
-            left: 0;
-            top: 0;
-            z-index: 10000;
-            background-color: black;
-            opacity: 0.72;
-        }
-
-        #v-license-dialog {
-            position: fixed;
             width: 20%;
-            left: 0;
-            right: 0;
             top: 20%;
-            margin: 0 auto;
-            z-index: 20000;
             background-color: white;
-
-        }
-
-        #v-license-dialog {
             border: 1px solid black;
         }
 
@@ -44,18 +26,17 @@
         #licenseDialogExplanation {
 
         }
+
     </style>
     <template>
-        <div class="modality-curtain">
-            <div id="v-license-dialog">
-                <div id="v-license-dialog-header"><span>[[header]]</span><span id="v-license-dialog-close"
-                                                                               on-click="_close">X</span></div>
-                <div id="licenseDialogExplanation"></div>
-                <div id="v-license-dialog-input">
-                    <input id="licenseDialogInput" type="text"/>
-                    <button on-click="_submit">Submit</button>
-                </div>
-            </div>
+        <div id="v-license-dialog-header">
+            <span>[[header]]</span>
+            <span id="v-license-dialog-close" on-click="_close">X</span>
+        </div>
+        <div id="licenseDialogExplanation"></div>
+        <div id="v-license-dialog-input">
+            <input id="licenseDialogInput" type="text">
+            <button on-click="_submit">Submit</button>
         </div>
     </template>
 </dom-module>
@@ -63,6 +44,8 @@
 <script>
     LicenseDialog = Polymer({
         is: "v-license-dialog",
+
+        behaviors: [Polymer.IronOverlayBehavior],
 
         headers: {
             unlicensed: "Unlicensed copy of Vaadin %s",
@@ -87,12 +70,21 @@
                 type: String,
                 observer: '_contentChanged',
                 computed: '_computeContent(type, productName)'
-            }
-        },
+            },
 
-        factoryImpl: function (type, productName) {
-            this.type = type;
-            this.productName = productName;
+            //override
+            withBackdrop: {
+                type: Boolean,
+                value: true
+            },
+            noCancelOnEscKey: {
+                type: Boolean,
+                value: true
+            },
+            noCancelOnOutsideClick: {
+                type: Boolean,
+                value: true
+            }
         },
 
         _contentChanged: function (value) {
@@ -101,12 +93,12 @@
 
         _submit: function () {
             this.fire('v-license-dialog-submit', {licenseKey: this.$.licenseDialogInput.value});
-            this.remove();
+            this.close();
         },
 
         _close: function () {
             this.fire('v-license-dialog-close', {type: this.type});
-            this.remove();
+            this.close();
         },
 
         _computeHeader: function (type, productName) {
