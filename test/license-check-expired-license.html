@@ -21,7 +21,8 @@
             checker = new LicenseCheck();
             checker.productName = 'some-product';
             checker.productVersion = 2;
-            checker.licenseUrlBase = "http://localhost:8080/components/vaadin-license-checker/test-license/";
+            //needs to be relative since wct can use a diferent path
+            checker.licenseUrlBase = "/components/vaadin-license-checker/test-license/";
 
             //use local storage instead of property since some browsers
             //load in a different order
