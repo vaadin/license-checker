@@ -4,11 +4,12 @@
   "repository": "vaadin/license-checker",
   "license": "Apache-2.0",
   "scripts": {
-    "test": "wct --plugin sauce"
+    "test": "gulp format:verify && wct --plugin sauce"
   },
   "devDependencies": {
     "bower": "^1.4.1",
     "gulp": "^3.8.11",
+    "gulp-jsbeautifier": "^1.0.1",
     "web-component-tester": "^3.3.9"
   }
 }

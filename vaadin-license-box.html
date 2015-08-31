@@ -9,15 +9,15 @@
             right: 0;
             cursor: pointer;
         }
-
+        
         #licenseBoxContent.trial {
             background-color: lightblue;
         }
-
+        
         #licenseBoxContent.unlicensed {
             background-color: red;
         }
-
+        
         #licenseBoxContent.expired {
             background-color: coral;
         }
@@ -58,13 +58,17 @@
                 }
             },
 
-            _close: function () {
-                this.fire('vaadin-license-box-close', {type: this.type, expiryEpoch: this.expiryEpoch});
+            _close: function() {
+                this.fire('vaadin-license-box-close', {
+                    type: this.type,
+                    expiryEpoch: this.expiryEpoch
+                });
                 this.close();
             },
 
-            _computeContent: function (type, productName) {
-                return this.contents[type].replace(/%s/, productName);
+            _computeContent: function(type, productName) {
+                return this.contents[type].replace(/%s/,
+                    productName);
             }
         });
     </script>

@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
@@ -9,70 +10,107 @@
 
     <link rel="import" href="../vaadin-license-checker.html">
 </head>
+
 <body>
 
-<script>
-    suite('scenario: expired license', function () {
+    <script>
+        suite('scenario: expired license', function() {
 
-        var checker;
+            var checker;
 
-        setup(function () {
-            window.localStorage.clear();
-            checker = new LicenseChecker();
-            checker.productName = 'some-product';
-            checker.productVersion = 2;
-            //needs to be relative since wct can use a diferent path
-            checker.licenseUrlBase = "../test-license/";
+            setup(function() {
+                window.localStorage.clear();
+                checker = new LicenseChecker();
+                checker.productName = 'some-product';
+                checker.productVersion = 2;
+                //needs to be relative since wct can use a diferent path
+                checker.licenseUrlBase = "../test-license/";
 
-            //use local storage instead of property since some browsers
-            //load in a different order
-            window.localStorage.setItem('vaadin.some-product.developer.license.key', '12345678-1234-abcd-1234-12345678trial');
-        });
-
-        teardown(function () {
-            if (checker && checker.parentNode !== undefined) {
-                checker.parentNode.removeChild(checker);
-            }
-        });
-
-        test('checker shows trial box on load when license is a trial license', function (done) {
-            checker.addEventListener('license-check-done', function () {
-                flush(function () {
-                    expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
-                    expect(document.querySelector('vaadin-license-box').style.display).to.not.equal('none');
-                    expect(document.querySelector('vaadin-license-box #licenseBoxContent').className).to.contain('trial');
-                    done();
-                });
+                //use local storage instead of property since some browsers
+                //load in a different order
+                window.localStorage.setItem(
+                    'vaadin.some-product.developer.license.key',
+                    '12345678-1234-abcd-1234-12345678trial'
+                );
             });
 
-            document.body.appendChild(checker);
-        });
+            teardown(function() {
+                if (checker && checker.parentNode !== undefined) {
+                    checker.parentNode.removeChild(checker);
+                }
+            });
 
-        test('user can enter valid license to trial license dialog', function (done) {
-            var secondCheck = function () {
-                flush(function () {
-                    expect(document.querySelector('vaadin-license-notification').style.display).to.not.equal('none');
-                    expect(document.querySelector('vaadin-license-box').style.display).to.equal('none');
-                    expect(document.querySelector('vaadin-license-dialog').style.display).to.equal('none');
-                    done();
+            test(
+                'checker shows trial box on load when license is a trial license',
+                function(done) {
+                    checker.addEventListener('license-check-done',
+                        function() {
+                            flush(function() {
+                                expect(document.querySelector(
+                                    'vaadin-license-dialog'
+                                )).to.not.exist;
+                                expect(document.querySelector(
+                                        'vaadin-license-box'
+                                    ).style.display).to
+                                    .not.equal('none');
+                                expect(document.querySelector(
+                                    'vaadin-license-box #licenseBoxContent'
+                                ).className).to.contain(
+                                    'trial');
+                                done();
+                            });
+                        });
+
+                    document.body.appendChild(checker);
                 });
-            };
 
-            var firstCheck = function () {
-                checker.removeEventListener('license-check-done', firstCheck);
-                checker.addEventListener('license-check-done', secondCheck);
-                document.querySelector('#licenseBoxContent').click();
-                document.querySelector('vaadin-license-dialog #licenseDialogInput').value = '12345678-1234-abcd-1234-12345678abcd';
-                document.querySelector('vaadin-license-dialog button').click();
-            };
+            test('user can enter valid license to trial license dialog',
+                function(done) {
+                    var secondCheck = function() {
+                        flush(function() {
+                            expect(document.querySelector(
+                                    'vaadin-license-notification'
+                                ).style.display).to.not
+                                .equal('none');
+                            expect(document.querySelector(
+                                'vaadin-license-box'
+                            ).style.display).to.equal(
+                                'none');
+                            expect(document.querySelector(
+                                'vaadin-license-dialog'
+                            ).style.display).to.equal(
+                                'none');
+                            done();
+                        });
+                    };
+
+                    var firstCheck = function() {
+                        checker.removeEventListener(
+                            'license-check-done',
+                            firstCheck);
+                        checker.addEventListener(
+                            'license-check-done',
+                            secondCheck);
+                        document.querySelector(
+                            '#licenseBoxContent').click();
+                        document.querySelector(
+                                'vaadin-license-dialog #licenseDialogInput'
+                            ).value =
+                            '12345678-1234-abcd-1234-12345678abcd';
+                        document.querySelector(
+                                'vaadin-license-dialog button')
+                            .click();
+                    };
 
 
-            checker.addEventListener('license-check-done', firstCheck);
+                    checker.addEventListener('license-check-done',
+                        firstCheck);
 
-            document.body.appendChild(checker);
+                    document.body.appendChild(checker);
+                });
         });
-    });
-</script>
+    </script>
 
 </body>
+
 </html>

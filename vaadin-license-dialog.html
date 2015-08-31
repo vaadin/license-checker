@@ -3,35 +3,30 @@
 
 <dom-module id="vaadin-license-dialog">
     <style>
-
         :host {
             position: fixed;
             width: 20%;
             top: 20%;
             background-color: white;
             border: 1px solid black;
-
             /* to fix positioning in FF */
             margin: 0 auto;
             left: 0;
             right: 0;
         }
-
+        
         #licenseDialogHeader {
             color: black;
             background-color: white;
             border-bottom: 1px solid black;
         }
-
+        
         #licenseDialogHeader #licenseDialogClose {
             cursor: pointer;
             float: right;
         }
-
-        #licenseDialogExplanation {
-
-        }
-
+        
+        #licenseDialogExplanation {}
     </style>
     <template>
         <div id="licenseDialogHeader">
@@ -96,48 +91,63 @@
                 }
             },
 
-            _contentChanged: function (value) {
+            _contentChanged: function(value) {
                 this.$.licenseDialogExplanation.innerHTML = value;
             },
 
-            _submit: function () {
-                this.fire('vaadin-license-dialog-submit', {licenseKey: this.$.licenseDialogInput.value});
+            _submit: function() {
+                this.fire('vaadin-license-dialog-submit', {
+                    licenseKey: this.$.licenseDialogInput.value
+                });
                 this.close();
             },
 
-            _close: function () {
-                this.fire('vaadin-license-dialog-close', {type: this.type, expiryEpoch: this.expiryEpoch});
+            _close: function() {
+                this.fire('vaadin-license-dialog-close', {
+                    type: this.type,
+                    expiryEpoch: this.expiryEpoch
+                });
                 this.close();
             },
 
-            _computeHeader: function (type, productName) {
+            _computeHeader: function(type, productName) {
                 return this.headers[type].replace(/%s/, productName);
             },
 
-            _computeContent: function (type, productName, expiryEpoch) {
+            _computeContent: function(type, productName, expiryEpoch) {
                 if (type === 'trial') {
                     var timeToExpiry = expiryEpoch - Date.now();
-                    var hoursToExpiry = Math.round(timeToExpiry / 1000 / 60 / 60);
-                    var daysToExpiry = Math.round(timeToExpiry / 1000 / 60 / 60 / 24);
+                    var hoursToExpiry = Math.round(timeToExpiry /
+                        1000 / 60 / 60);
+                    var daysToExpiry = Math.round(timeToExpiry /
+                        1000 / 60 / 60 / 24);
                     var expiryDate = new Date(expiryEpoch).toLocaleDateString();
 
                     if (hoursToExpiry < 24) {
-                        return this._replaceArguments(this.contents[type], productName, 'in ' + hoursToExpiry + ' hours');
+                        return this._replaceArguments(this.contents[
+                                type], productName, 'in ' +
+                            hoursToExpiry + ' hours');
                     } else if (daysToExpiry < 30) {
-                        return this._replaceArguments(this.contents[type], productName, 'in ' + daysToExpiry + ' days');
+                        return this._replaceArguments(this.contents[
+                                type], productName, 'in ' +
+                            daysToExpiry + ' days');
                     } else {
-                        return this._replaceArguments(this.contents[type], productName, 'on ' + expiryDate);
+                        return this._replaceArguments(this.contents[
+                                type], productName, 'on ' +
+                            expiryDate);
                     }
 
                 } else {
-                    return this._replaceArguments(this.contents[type], productName);
+                    return this._replaceArguments(this.contents[
+                        type], productName);
                 }
             },
 
-            _replaceArguments: function (string) {
+            _replaceArguments: function(string) {
                 var newString = string;
                 for (var i = 1; i < arguments.length; i++) {
-                    newString = newString.replace('{' + (i - 1) + '}', arguments[i]);
+                    newString = newString.replace('{' + (i - 1) +
+                        '}', arguments[i]);
                 }
 
                 return newString;

@@ -5,10 +5,8 @@
 <dom-module id="license-test-component">
     <template>
         <input is="iron-input" type="text" bind-value="{{inputValue}}">
-        <v-license-check license-key="{{inputValue}}"
-                      license-url-base="../test-license/"
-                      product-name="some-product"
-                      product-version="2">
+        <v-license-check license-key="{{inputValue}}" license-url-base="../test-license/"
+        product-name="some-product" product-version="2">
         </v-license-check>
     </template>
 </dom-module>
