@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../v-license-dialog.html">
+</head>
+<body>
+
+<v-license-dialog product-name="some-product" type="trial"></v-license-dialog>
+
+<script>
+    suite('<v-license-dialog>', function () {
+
+        test('shows dates when expiry is less than 30 days away', function () {
+            var dialog = document.querySelector('v-license-dialog');
+            var dateNow = new Date();
+            dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() + 10);
+
+            expect(dialog.content).to.have.string('You are currently using Vaadin some-product with a trial license, which will expire in 10 days.');
+        });
+
+        test('shows hours when expiry is less than 24 hours away', function () {
+            var dialog = document.querySelector('v-license-dialog');
+            var dateNow =  new Date();
+            dialog.expiryEpoch = dateNow.setHours(dateNow.getHours() + 10);
+
+            expect(dialog.content).to.have.string('You are currently using Vaadin some-product with a trial license, which will expire in 10 hours.');
+        });
+
+        test('shows expiry date when expiry is more than 30 days away', function () {
+            var dialog = document.querySelector('v-license-dialog');
+            var dateNow =  new Date();
+            dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() + 40);
+            var expectedDateString = dateNow.toLocaleDateString();
+
+            expect(dialog.content).to.have.string('You are currently using Vaadin some-product with a trial license, which will expire on ' + expectedDateString);
+        });
+    });
+</script>
+
+</body>
+</html>

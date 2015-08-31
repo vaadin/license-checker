@@ -12,7 +12,7 @@
    "inUse":true,
    "nonProfit":false,
    "type":"evaluation",
-   "message":"Evaluation license for Vaadin Charts 2 is valid until 2016-02-02. Purchase licenses at vaadin.com/pro",
+   "message":"Evaluation license for Vaadin some-product 2 is valid until 2016-02-02. Purchase licenses at vaadin.com/pro",
    "expiredEpoch":1454411829000,
    "expired":false
 }

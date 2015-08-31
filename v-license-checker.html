@@ -83,15 +83,6 @@
                 }
             },
 
-            _removeFromParent: function (node) {
-                node.parentNode.removeChild(node);
-            },
-
-
-            _existsAndAttached: function (node) {
-                return node && node.parentNode !== undefined;
-            },
-
             detached: function () {
                 if (this._existsAndAttached(this.licenseBox)) {
                     this._removeFromParent(this.licenseBox);
@@ -111,6 +102,15 @@
                 }
             },
 
+            _removeFromParent: function (node) {
+                node.parentNode.removeChild(node);
+            },
+
+
+            _existsAndAttached: function (node) {
+                return node && node.parentNode !== undefined;
+            },
+
             _checkLicenseKey: function (key) {
                 if (arguments.length === 0) {
                     //no-args call
@@ -118,7 +118,6 @@
                 }
 
                 var licenseUrl = this._computeUrl(this.licenseUrlBase, key);
-                console.log("checking with license URL " + licenseUrl);
 
                 this.$.licenseRequest.url = licenseUrl;
 
@@ -131,7 +130,6 @@
 
             _handleErrorFromServer: function (event) {
                 var response = event.detail.request;
-                console.log("License request failed, status: " + response.status + " failure text: " + this.response);
                 this._showLicenseDialog(this.licenseTypes.UNLICENSED)
 
                 this._fireLoadReadyEvent()
@@ -139,8 +137,6 @@
 
             _handleResultFromServer: function (event) {
                 var response = event.detail;
-
-                console.log("Result status: " + response.status + " result text: " + JSON.stringify(response.response));
 
                 var result = response.response;
 
@@ -155,7 +151,7 @@
 
                     } else if ("evaluation" === result.type) {
                         this.licenseKey = result.licenseKey;
-                        this._showLicenseBox(this.licenseTypes.TRIAL);
+                        this._showLicenseBox(this.licenseTypes.TRIAL, result.expiredEpoch);
 
                     } else {
                         //success
@@ -193,13 +189,12 @@
                 return "vaadin." + productName + ".developer.license.key";
             },
 
-
             _licenseDialogClosed: function (event) {
-                this._showLicenseBox(event.detail.type);
+                this._showLicenseBox(event.detail.type, event.detail.expiryEpoch);
             },
 
             _licenseBoxClosed: function (event) {
-                this._showLicenseDialog(event.detail.type);
+                this._showLicenseDialog(event.detail.type, event.detail.expiryEpoch);
             },
 
             _licenseBoxSubmit: function (event) {
@@ -207,7 +202,7 @@
                 this._checkLicenseKey(event.detail.licenseKey);
             },
 
-            _showLicenseDialog: function (type) {
+            _showLicenseDialog: function (type, expiryEpoch) {
                 if (!this.licenseDialog) {
                     this.licenseDialog = new LicenseDialog();
                     Polymer.dom(document.body).appendChild(this.licenseDialog);
@@ -216,12 +211,16 @@
                 }
 
                 this.licenseDialog.type = type;
-                this.licenseDialog.productName =  this.productName;
+                this.licenseDialog.productName = this.productName;
+
+                if (type === this.licenseTypes.TRIAL) {
+                    this.licenseDialog.expiryEpoch = expiryEpoch;
+                }
 
                 this.licenseDialog.open();
             },
 
-            _showLicenseBox: function (type) {
+            _showLicenseBox: function (type, expiryEpoch) {
                 if (!this.licenseBox) {
                     this.licenseBox = new LicenseBox();
                     Polymer.dom(document.body).appendChild(this.licenseBox);
@@ -230,6 +229,10 @@
 
                 this.licenseBox.type = type;
                 this.licenseBox.productName = this.productName;
+
+                if (type === this.licenseTypes.TRIAL) {
+                    this.licenseBox.expiryEpoch = expiryEpoch;
+                }
 
                 this.licenseBox.open();
             },

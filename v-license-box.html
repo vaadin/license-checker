@@ -46,6 +46,7 @@
             },
             type: String,
             productName: String,
+            expiryEpoch: Number,
 
             //override
             noCancelOnEscKey: {
@@ -59,7 +60,7 @@
         },
 
         _close: function () {
-            this.fire('v-license-box-close', {type: this.type});
+            this.fire('v-license-box-close', {type: this.type, expiryEpoch: this.expiryEpoch});
             this.close();
         },
 

@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../v-license-checker.html">
+</head>
+<body>
+
+<script>
+    suite('scenario: expired license', function () {
+
+        var checker;
+
+        setup(function () {
+            window.localStorage.clear();
+            checker = new LicenseCheck();
+            checker.productName = 'some-product';
+            checker.productVersion = 2;
+            //needs to be relative since wct can use a diferent path
+            checker.licenseUrlBase = "../test-license/";
+
+            //use local storage instead of property since some browsers
+            //load in a different order
+            window.localStorage.setItem('vaadin.some-product.developer.license.key', '12345678-1234-abcd-1234-12345678trial');
+        });
+
+        teardown(function () {
+            if (checker && checker.parentNode !== undefined) {
+                checker.parentNode.removeChild(checker);
+            }
+        });
+
+        test('checker shows trial box on load when license is a trial license', function (done) {
+            checker.addEventListener('license-check-done', function () {
+                flush(function () {
+                    expect(document.querySelector('v-license-dialog')).to.not.exist;
+                    expect(document.querySelector('v-license-box').style.display).to.not.equal('none');
+                    expect(document.querySelector('v-license-box #license-box-content').className).to.contain('trial');
+                    done();
+                });
+            });
+
+            document.body.appendChild(checker);
+        });
+
+        test('user can enter valid license to trial license dialog', function (done) {
+            var secondCheck = function () {
+                flush(function () {
+                    expect(document.querySelector('v-license-notification').style.display).to.not.equal('none');
+                    expect(document.querySelector('v-license-box').style.display).to.equal('none');
+                    expect(document.querySelector('v-license-dialog').style.display).to.equal('none');
+                    done();
+                });
+            };
+
+            var firstCheck = function () {
+                checker.removeEventListener('license-check-done', firstCheck);
+                checker.addEventListener('license-check-done', secondCheck);
+                document.querySelector('#license-box-content').click();
+                document.querySelector('v-license-dialog #licenseDialogInput').value = '12345678-1234-abcd-1234-12345678abcd';
+                document.querySelector('v-license-dialog button').click();
+            };
+
+
+            checker.addEventListener('license-check-done', firstCheck);
+
+            document.body.appendChild(checker);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -59,14 +59,19 @@
         },
 
         contents: {
-            unlicensed: 'To use Vaadin %s in development, each developer needs to have a valid license. Please <a href="https://vaadin.com/pro/licenses" target="_blank"> get a license from vaadin.com</a>, then enter your license key here:',
-            trial: 'You are currently using Vaadin %s with a trial license, which will expire in %d days. You can <a href="https://vaadin.com/pro/licenses" target="_blank"> visit vaadin.com to get a paid license</a>, then enter your license key here:',
-            expired: 'Your Vaadin %s license has expired. Please <a href="https://vaadin.com/pro/licenses" target="_blank">renew your license at vaadin.com</a>, then refresh the page. Alternatively, if you have a new license key, you can enter it here:'
+            unlicensed: 'To use Vaadin {0} in development, each developer needs to have a valid license. Please <a href="https://vaadin.com/pro/licenses" target="_blank"> get a license from vaadin.com</a>, then enter your license key here:',
+            trial: 'You are currently using Vaadin {0} with a trial license, which will expire {1}. You can <a href="https://vaadin.com/pro/licenses" target="_blank"> visit vaadin.com to get a paid license</a>, then enter your license key here:',
+            expired: 'Your Vaadin {0} license has expired. Please <a href="https://vaadin.com/pro/licenses" target="_blank">renew your license at vaadin.com</a>, then refresh the page. Alternatively, if you have a new license key, you can enter it here:'
         },
 
         properties: {
             type: String,
             productName: String,
+            expiryEpoch: {
+                type: Number,
+                value: 0
+            },
+
             header: {
                 type: String,
                 computed: '_computeHeader(type, productName)'
@@ -74,7 +79,7 @@
             content: {
                 type: String,
                 observer: '_contentChanged',
-                computed: '_computeContent(type, productName)'
+                computed: '_computeContent(type, productName, expiryEpoch)'
             },
 
             //override
@@ -102,7 +107,7 @@
         },
 
         _close: function () {
-            this.fire('v-license-dialog-close', {type: this.type});
+            this.fire('v-license-dialog-close', {type: this.type, expiryEpoch: this.expiryEpoch});
             this.close();
         },
 
@@ -110,9 +115,33 @@
             return this.headers[type].replace(/%s/, productName);
         },
 
-        _computeContent: function (type, productName) {
-            return this.contents[type].replace(/%s/, productName);
+        _computeContent: function (type, productName, expiryEpoch) {
+            if (type === 'trial') {
+                var timeToExpiry = expiryEpoch - Date.now();
+                var hoursToExpiry = Math.round(timeToExpiry / 1000 / 60 / 60);
+                var daysToExpiry = Math.round(timeToExpiry / 1000 / 60 / 60 / 24);
+                var expiryDate = new Date(expiryEpoch).toLocaleDateString();
 
+                if (hoursToExpiry < 24) {
+                    return this._replaceArguments(this.contents[type], productName, 'in ' + hoursToExpiry + ' hours');
+                } else if (daysToExpiry < 30) {
+                    return this._replaceArguments(this.contents[type], productName, 'in ' + daysToExpiry + ' days');
+                } else {
+                    return this._replaceArguments(this.contents[type], productName, 'on ' + expiryDate);
+                }
+
+            } else {
+                return this._replaceArguments(this.contents[type], productName);
+            }
+        },
+
+        _replaceArguments: function (string) {
+            var newString = string;
+            for (var i = 1; i < arguments.length; i++) {
+                newString = newString.replace('{' + (i - 1) + '}', arguments[i]);
+            }
+
+            return newString;
         }
 
     });
