@@ -1,13 +1,13 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-input/iron-input.html">
-<link rel="import" href="../v-license-checker.html">
+<link rel="import" href="../vaadin-license-checker.html">
 
 <dom-module id="license-test-component">
     <template>
         <input is="iron-input" type="text" bind-value="{{inputValue}}">
-        <v-license-check license-key="{{inputValue}}" license-url-base="../test-license/"
+        <vaadin-license-checker license-key="{{inputValue}}" license-url-base="../test-license/"
         product-name="some-product" product-version="2">
-        </v-license-check>
+        </vaadin-license-checker>
     </template>
 </dom-module>
 

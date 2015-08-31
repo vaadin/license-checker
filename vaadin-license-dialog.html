@@ -121,7 +121,10 @@
                         1000 / 60 / 60);
                     var daysToExpiry = Math.round(timeToExpiry /
                         1000 / 60 / 60 / 24);
-                    var expiryDate = new Date(expiryEpoch).toLocaleDateString();
+                    var expiryDate = new Date(expiryEpoch);
+                    var expiryDateISOFormat = expiryDate.getFullYear() +
+                        '-' + this._padDate(expiryDate.getMonth()) +
+                        '-' + this._padDate(expiryDate.getDate());
 
                     if (hoursToExpiry < 24) {
                         return this._replaceArguments(this.contents[
@@ -134,7 +137,7 @@
                     } else {
                         return this._replaceArguments(this.contents[
                                 type], productName, 'on ' +
-                            expiryDate);
+                            expiryDateISOFormat);
                     }
 
                 } else {
@@ -151,6 +154,14 @@
                 }
 
                 return newString;
+            },
+
+            _padDate: function(date) {
+                if (date.toString().length === 1) {
+                    return '0' + date;
+                } else {
+                    return date;
+                }
             }
 
         });

@@ -52,7 +52,17 @@
                     var dateNow = new Date();
                     dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() +
                         40);
-                    var expectedDateString = dateNow.toLocaleDateString();
+
+                    var padDate = function(date) {
+                        if (date.toString().length === 1) {
+                            return '0' + date;
+                        } else {
+                            return date;
+                        }
+                    };
+                    var expectedDateString = dateNow.getFullYear() +
+                        '-' + padDate(dateNow.getMonth()) + '-' +
+                        padDate(dateNow.getDate());
 
                     expect(dialog.content).to.have.string(
                         'You are currently using Vaadin some-product with a trial license, which will expire on ' +
