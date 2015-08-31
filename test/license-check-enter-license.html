@@ -27,8 +27,8 @@
         });
 
         teardown(function () {
-            if (checker) {
-                checker.remove();
+            if (checker && checker.parentNode !== undefined) {
+                checker.parentNode.removeChild(checker);
             }
         });
 

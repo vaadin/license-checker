@@ -47,7 +47,10 @@
             },
 
             properties: {
-                licenseKey: String,
+                licenseKey: {
+                    type: String,
+                    notify: true
+                },
                 licenseUrlBase: {
                     type: String,
                     value: "https://tools.vaadin.com/vaadin-license-server/licenses/"
@@ -80,17 +83,26 @@
                 }
             },
 
+            _removeFromParent: function (node) {
+                node.parentNode.removeChild(node);
+            },
+
+
+            _existsAndAttached: function (node) {
+                return node && node.parentNode !== undefined;
+            },
+
             detached: function () {
-                if (this.licenseBox) {
-                    this.licenseBox.remove();
+                if (this._existsAndAttached(this.licenseBox)) {
+                    this._removeFromParent(this.licenseBox);
                     this.licenseBox = undefined;
                 }
-                if (this.licenseDialog) {
-                    this.licenseDialog.remove();
+                if (this._existsAndAttached(this.licenseDialog)) {
+                    this._removeFromParent(this.licenseDialog);
                     this.licenseDialog = undefined;
                 }
-                if (this.notification) {
-                    this.notification.remove();
+                if (this._existsAndAttached(this.notification)) {
+                    this._removeFromParent(this.notification);
                     this.notification = undefined;
                 }
 
@@ -138,9 +150,11 @@
 
                 } else {
                     if (true === result.expired) {
+                        this.licenseKey = result.licenseKey;
                         this._showLicenseBox(this.licenseTypes.EXPIRED);
 
                     } else if ("evaluation" === result.type) {
+                        this.licenseKey = result.licenseKey;
                         this._showLicenseBox(this.licenseTypes.TRIAL);
 
                     } else {
