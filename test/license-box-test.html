@@ -7,22 +7,22 @@
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../v-license-box.html">
+    <link rel="import" href="../vaadin-license-box.html">
 </head>
 <body>
 
-<v-license-box id="errorbox" type="unlicensed" product-name="some-product"></v-license-box>
+<vaadin-license-box id="errorbox" type="unlicensed" product-name="some-product"></vaadin-license-box>
 
-<v-license-box id="errorbox-forclick" type="unlicensed"></v-license-box>
+<vaadin-license-box id="errorbox-forclick" type="unlicensed"></vaadin-license-box>
 
-<v-license-box id="evalbox" product-name="some-product" type="trial"></v-license-box>
+<vaadin-license-box id="evalbox" product-name="some-product" type="trial"></vaadin-license-box>
 
 <script>
-    suite('<v-license-box>', function () {
+    suite('<vaadin-license-box>', function () {
 
         test('appends type as a CSS class', function () {
-            var errorBoxContent = document.querySelector('#errorbox #license-box-content');
-            var evalBoxContent = document.querySelector('#evalbox #license-box-content');
+            var errorBoxContent = document.querySelector('#errorbox #licenseBoxContent');
+            var evalBoxContent = document.querySelector('#evalbox #licenseBoxContent');
 
             expect(errorBoxContent.className).to.contain('unlicensed');
             expect(evalBoxContent.className).to.contain('trial');
@@ -31,7 +31,7 @@
         test('fires event on click', function (done) {
             var errorBoxForClick = document.querySelector('#errorbox-forclick');
 
-            errorBoxForClick.addEventListener('v-license-box-close', new function() {
+            errorBoxForClick.addEventListener('vaadin-license-box-close', new function() {
                 done();
             });
 

@@ -1,0 +1,71 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+
+<dom-module id="vaadin-license-box">
+    <style>
+        #licenseBoxContent {
+            position: fixed;
+            top: 0;
+            right: 0;
+            cursor: pointer;
+        }
+
+        #licenseBoxContent.trial {
+            background-color: lightblue;
+        }
+
+        #licenseBoxContent.unlicensed {
+            background-color: red;
+        }
+
+        #licenseBoxContent.expired {
+            background-color: coral;
+        }
+    </style>
+    <template>
+        <div id="licenseBoxContent" class$="[[type]]" on-click="_close">[[content]]</div>
+    </template>
+
+    <script>
+        LicenseBox = Polymer({
+            is: "vaadin-license-box",
+
+            behaviors: [Polymer.IronOverlayBehavior],
+
+            contents: {
+                unlicensed: 'Unlicensed copy of Vaadin %s',
+                trial: 'Vaadin %s trial license',
+                expired: 'Vaadin %s license expired'
+            },
+
+            properties: {
+                content: {
+                    type: String,
+                    computed: '_computeContent(type, productName)'
+                },
+                type: String,
+                productName: String,
+                expiryEpoch: Number,
+
+                //override
+                noCancelOnEscKey: {
+                    type: Boolean,
+                    value: true
+                },
+                noCancelOnOutsideClick: {
+                    type: Boolean,
+                    value: true
+                }
+            },
+
+            _close: function () {
+                this.fire('vaadin-license-box-close', {type: this.type, expiryEpoch: this.expiryEpoch});
+                this.close();
+            },
+
+            _computeContent: function (type, productName) {
+                return this.contents[type].replace(/%s/, productName);
+            }
+        });
+    </script>
+</dom-module>

@@ -7,24 +7,24 @@
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../v-license-checker.html">
+    <link rel="import" href="../vaadin-license-checker.html">
 </head>
 <body>
 
-<v-license-check product-name="foobar"></v-license-check>
-<v-license-check product-name="foobar"></v-license-check>
+<vaadin-license-checker product-name="foobar"></vaadin-license-checker>
+<vaadin-license-checker product-name="foobar"></vaadin-license-checker>
 
 <script>
 
-    suite('<v-license-check>', function () {
+    suite('<vaadin-license-checker>', function () {
 
         setup(function () {
             window.localStorage.clear();
         });
 
         test('shows only one box when multiple checkers for the same product exist in the DOM', function () {
-            expect(document.querySelector('v-license-dialog')).to.exist;
-            expect(document.querySelectorAll('v-license-dialog').length).to.equal(1);
+            expect(document.querySelector('vaadin-license-dialog')).to.exist;
+            expect(document.querySelectorAll('vaadin-license-dialog').length).to.equal(1);
         });
     });
 </script>

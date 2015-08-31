@@ -7,17 +7,17 @@
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../v-license-dialog.html">
+    <link rel="import" href="../vaadin-license-dialog.html">
 </head>
 <body>
 
-<v-license-dialog product-name="some-product" type="trial"></v-license-dialog>
+<vaadin-license-dialog product-name="some-product" type="trial"></vaadin-license-dialog>
 
 <script>
-    suite('<v-license-dialog>', function () {
+    suite('<vaadin-license-dialog>', function () {
 
         test('shows dates when expiry is less than 30 days away', function () {
-            var dialog = document.querySelector('v-license-dialog');
+            var dialog = document.querySelector('vaadin-license-dialog');
             var dateNow = new Date();
             dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() + 10);
 
@@ -25,7 +25,7 @@
         });
 
         test('shows hours when expiry is less than 24 hours away', function () {
-            var dialog = document.querySelector('v-license-dialog');
+            var dialog = document.querySelector('vaadin-license-dialog');
             var dateNow =  new Date();
             dialog.expiryEpoch = dateNow.setHours(dateNow.getHours() + 10);
 
@@ -33,7 +33,7 @@
         });
 
         test('shows expiry date when expiry is more than 30 days away', function () {
-            var dialog = document.querySelector('v-license-dialog');
+            var dialog = document.querySelector('vaadin-license-dialog');
             var dateNow =  new Date();
             dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() + 40);
             var expectedDateString = dateNow.toLocaleDateString();

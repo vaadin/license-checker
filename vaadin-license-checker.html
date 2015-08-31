@@ -2,11 +2,11 @@
 <link rel="import" href="bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 
-<link rel="import" href="v-license-box.html">
-<link rel="import" href="v-license-dialog.html">
-<link rel="import" href="v-license-notification.html">
+<link rel="import" href="vaadin-license-box.html">
+<link rel="import" href="vaadin-license-dialog.html">
+<link rel="import" href="vaadin-license-notification.html">
 
-<dom-module id="v-license-check">
+<dom-module id="vaadin-license-checker">
 
     <template>
         <iron-localstorage id="storageLicense"
@@ -27,8 +27,8 @@
     </template>
 
     <script>
-        LicenseCheck = Polymer({
-            is: "v-license-check",
+        LicenseChecker = Polymer({
+            is: "vaadin-license-checker",
 
             // simple global state to detect multiple instances
             instances: {},
@@ -206,8 +206,8 @@
                 if (!this.licenseDialog) {
                     this.licenseDialog = new LicenseDialog();
                     Polymer.dom(document.body).appendChild(this.licenseDialog);
-                    this.licenseDialog.addEventListener('v-license-dialog-close', this._licenseDialogClosed.bind(this));
-                    this.licenseDialog.addEventListener('v-license-dialog-submit', this._licenseBoxSubmit.bind(this));
+                    this.licenseDialog.addEventListener('vaadin-license-dialog-close', this._licenseDialogClosed.bind(this));
+                    this.licenseDialog.addEventListener('vaadin-license-dialog-submit', this._licenseBoxSubmit.bind(this));
                 }
 
                 this.licenseDialog.type = type;
@@ -224,7 +224,7 @@
                 if (!this.licenseBox) {
                     this.licenseBox = new LicenseBox();
                     Polymer.dom(document.body).appendChild(this.licenseBox);
-                    this.licenseBox.addEventListener('v-license-box-close', this._licenseBoxClosed.bind(this));
+                    this.licenseBox.addEventListener('vaadin-license-box-close', this._licenseBoxClosed.bind(this));
                 }
 
                 this.licenseBox.type = type;
