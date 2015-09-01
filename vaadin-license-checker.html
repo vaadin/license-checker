@@ -54,6 +54,7 @@
                 },
                 productName: String,
                 productVersion: Number,
+                productCaption: String,
                 storageKey: {
                     type: String,
                     computed: '_computeStorageKey(productName)'
@@ -172,8 +173,9 @@
             },
 
             _isValidLicense: function(productName, productVersion) {
-                return productName === this.productName &&
-                    productVersion === this.productVersion;
+                return productName === this.productName && (
+                    productVersion === this.productVersion || !
+                    this._exists(productVersion));
             },
 
             _fireLoadReadyEvent: function() {
@@ -218,7 +220,7 @@
                 }
 
                 this.licenseDialog.type = type;
-                this.licenseDialog.productName = this.productName;
+                this.licenseDialog.productCaption = this.productCaption;
 
                 if (type === this.licenseTypes.TRIAL) {
                     this.licenseDialog.expiryEpoch = expiryEpoch;
@@ -237,7 +239,7 @@
                 }
 
                 this.licenseBox.type = type;
-                this.licenseBox.productName = this.productName;
+                this.licenseBox.productCaption = this.productCaption;
 
                 if (type === this.licenseTypes.TRIAL) {
                     this.licenseBox.expiryEpoch = expiryEpoch;

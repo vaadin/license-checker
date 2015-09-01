@@ -5,8 +5,11 @@
 <dom-module id="license-test-component">
     <template>
         <input is="iron-input" type="text" bind-value="{{inputValue}}">
+        <!--<vaadin-license-checker license-key="{{inputValue}}" product-name="vaadin-charts"
+        product-version="3" product-caption="Vaadin Charts">
+        </vaadin-license-checker>-->
         <vaadin-license-checker license-key="{{inputValue}}" license-url-base="../test-license/"
-        product-name="some-product" product-version="2">
+        product-name="some-product" product-version="2" product-caption="Vaadin Some Product">
         </vaadin-license-checker>
     </template>
 </dom-module>

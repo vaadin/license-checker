@@ -9,15 +9,15 @@
             right: 0;
             cursor: pointer;
         }
-
+        
         #licenseBoxContent.trial {
             background-color: lightblue;
         }
-
+        
         #licenseBoxContent.unlicensed {
             background-color: red;
         }
-
+        
         #licenseBoxContent.expired {
             background-color: coral;
         }
@@ -33,18 +33,18 @@
             behaviors: [Polymer.IronOverlayBehavior],
 
             contents: {
-                unlicensed: 'Unlicensed copy of Vaadin %s',
-                trial: 'Vaadin %s trial license',
-                expired: 'Vaadin %s license expired'
+                unlicensed: 'Unlicensed copy of {0}',
+                trial: '{0} trial license',
+                expired: '{0} license expired'
             },
 
             properties: {
                 content: {
                     type: String,
-                    computed: '_computeContent(type, productName)'
+                    computed: '_computeContent(type, productCaption)'
                 },
                 type: String,
-                productName: String,
+                productCaption: String,
                 expiryEpoch: Number,
 
                 //override
@@ -66,9 +66,9 @@
                 this.close();
             },
 
-            _computeContent: function(type, productName) {
-                return this.contents[type].replace(/%s/,
-                    productName);
+            _computeContent: function(type, productCaption) {
+                return this.contents[type].replace('{0}',
+                    productCaption);
             }
         });
     </script>
