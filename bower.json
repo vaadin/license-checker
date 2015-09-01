@@ -1,6 +1,6 @@
 {
   "name": "vaadin-license-checker",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "authors": [
     "Vaadin Ltd"
   ],
@@ -14,13 +14,13 @@
     "tests"
   ],
   "dependencies": {
-    "iron-ajax": "PolymerElements/iron-ajax#~1.0.4",
-    "iron-localstorage": "PolymerElements/iron-localstorage#~1.0.4",
-    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#~1.0.6",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.0.0",
+    "iron-localstorage": "PolymerElements/iron-localstorage#^1.0.0",
+    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#1.0.0",
     "polymer": "Polymer/polymer#^1.0.0"
   },
   "devDependencies": {
-    "iron-input": "PolymerElements/iron-input#~1.0.5",
+    "iron-input": "PolymerElements/iron-input#^1.0.0",
     "web-component-tester": "*"
   }
 }
