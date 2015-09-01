@@ -5,6 +5,7 @@
     "Vaadin Ltd"
   ],
   "license": "Apache-2.0",
+  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
@@ -13,9 +14,13 @@
     "tests"
   ],
   "dependencies": {
+    "iron-ajax": "PolymerElements/iron-ajax#~1.0.4",
+    "iron-localstorage": "PolymerElements/iron-localstorage#~1.0.4",
+    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#~1.0.6",
     "polymer": "Polymer/polymer#^1.0.0"
   },
   "devDependencies": {
+    "iron-input": "PolymerElements/iron-input#~1.0.5",
     "web-component-tester": "*"
   }
 }

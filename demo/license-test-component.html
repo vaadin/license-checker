@@ -1,0 +1,22 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../vaadin-license-checker.html">
+
+<dom-module id="license-test-component">
+    <template>
+        <input is="iron-input" type="text" bind-value="{{inputValue}}">
+        <vaadin-license-checker license-key="{{inputValue}}" license-url-base="../test-license/"
+        product-name="some-product" product-version="2">
+        </vaadin-license-checker>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: "license-test-component",
+
+        properties: {
+            inputValue: String
+        }
+    });
+</script>

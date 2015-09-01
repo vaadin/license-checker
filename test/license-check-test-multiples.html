@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../vaadin-license-checker.html">
+</head>
+
+<body>
+
+    <vaadin-license-checker product-name="foobar"></vaadin-license-checker>
+    <vaadin-license-checker product-name="foobar"></vaadin-license-checker>
+
+    <script>
+        suite('<vaadin-license-checker>', function() {
+
+            setup(function() {
+                window.localStorage.clear();
+            });
+
+            test(
+                'shows only one box when multiple checkers for the same product exist in the DOM',
+                function() {
+                    expect(document.querySelector(
+                        'vaadin-license-dialog')).to.exist;
+                    expect(document.querySelectorAll(
+                        'vaadin-license-dialog').length).to.equal(
+                        1);
+                });
+        });
+    </script>
+
+</body>
+
+</html>
