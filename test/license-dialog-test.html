@@ -5,15 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../bower_components/web-component-tester/browser.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
 
     <link rel="import" href="../vaadin-license-dialog.html">
 </head>
 
 <body>
 
-    <vaadin-license-dialog product-name="some-product" type="trial"></vaadin-license-dialog>
+    <vaadin-license-dialog product-caption="Some Product" product-name="some-product"
+    type="trial"></vaadin-license-dialog>
 
     <script>
         suite('<vaadin-license-dialog>', function() {
@@ -27,7 +28,7 @@
                         10);
 
                     expect(dialog.content).to.have.string(
-                        'You are currently using Vaadin some-product with a trial license, which will expire in 10 days.'
+                        'You are currently using Some Product with a trial license, which will expire in 10 days.'
                     );
                 });
 
@@ -40,7 +41,7 @@
                         10);
 
                     expect(dialog.content).to.have.string(
-                        'You are currently using Vaadin some-product with a trial license, which will expire in 10 hours.'
+                        'You are currently using Some Product with a trial license, which will expire in 10 hours.'
                     );
                 });
 
@@ -65,7 +66,7 @@
                         padDate(dateNow.getDate());
 
                     expect(dialog.content).to.have.string(
-                        'You are currently using Vaadin some-product with a trial license, which will expire on ' +
+                        'You are currently using Some Product with a trial license, which will expire on ' +
                         expectedDateString);
                 });
         });

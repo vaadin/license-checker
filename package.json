@@ -10,6 +10,6 @@
     "bower": "^1.4.1",
     "gulp": "^3.8.11",
     "gulp-jsbeautifier": "^1.0.1",
-    "web-component-tester": "^3.3.9"
+    "web-component-tester": "^3.3.0"
   }
 }

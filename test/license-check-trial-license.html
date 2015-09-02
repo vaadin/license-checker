@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../bower_components/web-component-tester/browser.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
 
     <link rel="import" href="../vaadin-license-checker.html">
 </head>
@@ -21,7 +21,8 @@
             setup(function() {
                 window.localStorage.clear();
                 checker = new LicenseChecker();
-                checker.productCaption = 'some-product';
+                checker.productName = 'some-product';
+                checker.productCaption = 'Some Product';
                 checker.productVersion = 2;
                 //needs to be relative since wct can use a diferent path
                 checker.licenseUrlBase = "../test-license/";
