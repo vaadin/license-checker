@@ -34,13 +34,22 @@
                 });
 
             test(
-                'validates both missing and set versions',
+                'validates both missing and set version numbers',
                 function() {
                     var licenseChecker = new LicenseChecker();
                     licenseChecker.productName = "some-product";
                     expect(licenseChecker._isValidLicense(
                         "some-product", undefined)).to.be.true;
                     licenseChecker.productVersion = 2;
+                    expect(licenseChecker._isValidLicense(
+                        "some-product", 2)).to.be.true;
+                });
+            test(
+                'validate that version number can be set as string',
+                function() {
+                    var licenseChecker = new LicenseChecker();
+                    licenseChecker.productVersion = "2";
+                    licenseChecker.productName = "some-product";
                     expect(licenseChecker._isValidLicense(
                         "some-product", 2)).to.be.true;
                 });
