@@ -56,7 +56,7 @@
         }
 
         #licenseDialogExplanation {
-            max-width: 24em;
+            max-width: 26em;
             padding: 0 12px;
         }
 
@@ -125,6 +125,14 @@
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
+
+        #vaadin-license-dialog-input > button:hover {
+            background-color: rgba(186, 186, 186, 0.1);
+        }
+
+        #vaadin-license-dialog-input > button:active {
+            background-color: rgba(125, 125, 125, 0.2);
+        }
     </style>
     <template>
         <div id="licenseDialogHeader">
@@ -133,7 +141,8 @@
         </div>
         <div id="licenseDialogExplanation"></div>
         <div id="vaadin-license-dialog-input">
-            <input id="licenseDialogInput" type="text" size="34"><button on-click="_submit">Submit</button>
+            <input id="licenseDialogInput" type="text" size="38"><button
+                on-click="_submit">Submit</button>
         </div>
     </template>
 
