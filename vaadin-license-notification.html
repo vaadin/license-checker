@@ -14,15 +14,24 @@
             letter-spacing: 0;
             border-radius: 4px;
             box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.15);
-            background-color: rgba(68, 68, 68, 0.9);
             font-weight: 400;
+            background: #fff;
+            color: #555;
+            border: 2px solid #2c9720;
         }
 
         :host > div {
             font-size: 19px;
             line-height: 1;
-            color: #fff;
             vertical-align: middle;
+            color: #2c9720;
+            font-weight: 400;
+        }
+
+        :host > div:before {
+            font-family: FontAwesome;
+            content: "\f00c";
+            margin-right: 0.5em;
         }
     </style>
 
