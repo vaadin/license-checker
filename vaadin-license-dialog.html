@@ -4,6 +4,8 @@
 <dom-module id="vaadin-license-dialog">
     <style>
         :host {
+            font: 300 16px/1.55 "Open Sans", sans-serif;
+            cursor: default;
             box-sizing: border-box;
             display: inline-block;
             vertical-align: top;
@@ -15,21 +17,52 @@
             padding: 0;
             min-width: 148px !important;
             min-height: 37px !important;
-            /*white-space: nowrap;*/
             overflow: hidden !important;
             transition: width 200ms, height 200ms, top 200ms, left 200ms;
-            margin-left: 0px;
-            margin-top: 0px;
+            margin-left: 0;
+            margin-top: 0;
             z-index: 10000;
             visibility: visible;
             position: absolute;
-            width: 300px;
+        }
+
+        #header  {
+            line-height: 36px;
+            padding-left: 12px;
+            margin-right: 37px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #7e7e7e;
+        }
+
+        #licenseDialogClose {
+            position: absolute;
+            z-index: 3;
+            top: 0;
+            right: 0;
+            box-sizing: border-box;
+            height: 36px;
+            background-color: white;
+            line-height: 34px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 21px;
+            color: #999999;
+            width: 37px;
+            padding-right: 0;
+            border-radius: 0 4px 0 4px;
+            transition: color 140ms;
+        }
+
+        #licenseDialogExplanation {
+            width: 20em;
         }
     </style>
     <template>
         <div id="licenseDialogHeader">
-            <span>[[header]]</span>
-            <span id="licenseDialogClose" on-click="_close">X</span>
+            <span id="header">[[header]]</span>
+            <span id="licenseDialogClose" on-click="_close">&times;</span>
         </div>
         <div id="licenseDialogExplanation"></div>
         <div id="vaadin-license-dialog-input">
