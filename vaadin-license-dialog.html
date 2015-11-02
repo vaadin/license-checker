@@ -56,13 +56,38 @@
         }
 
         #licenseDialogExplanation {
-            width: 20em;
-            padding: 0 12px;
+            max-width: 23em;
+            padding: 0 12px 12px 12px;
             font-weight: 400;
         }
 
         #vaadin-license-dialog-input {
             padding: 0 12px 12px 12px;
+        }
+
+        #licenseDialogInput {
+            box-sizing: border-box;
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+            white-space: normal;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -ms-appearance: none;
+            -o-appearance: none;
+            appearance: none;
+            margin: 0;
+            font: inherit;
+            font-weight: 400;
+            line-height: normal;
+            height: 37px;
+            border-radius: 4px;
+            padding: 4px 9px;
+            border: 1px solid #c5c5c5;
+            background: white;
+            color: #474747;
+            box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: box-shadow 180ms, border 180ms;
         }
     </style>
     <template>
@@ -72,7 +97,7 @@
         </div>
         <div id="licenseDialogExplanation"></div>
         <div id="vaadin-license-dialog-input">
-            <input id="licenseDialogInput" type="text">
+            <input id="licenseDialogInput" type="text" size="34">
             <button on-click="_submit">Submit</button>
         </div>
     </template>
