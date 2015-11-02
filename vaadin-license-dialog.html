@@ -56,8 +56,15 @@
         }
 
         #licenseDialogExplanation {
-            max-width: 23em;
-            padding: 0 12px 12px 12px;
+            max-width: 24em;
+            padding: 0 12px;
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        p:first-child {
             font-weight: 400;
         }
 
@@ -88,6 +95,35 @@
             color: #474747;
             box-shadow: inset 0 1px 0 #f7f7f7, 0 1px 0 rgba(255, 255, 255, 0.1);
             transition: box-shadow 180ms, border 180ms;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        #vaadin-license-dialog-input > button {
+            box-sizing: border-box;
+            display: inline-block;
+            font: inherit;
+            line-height: 1.55;
+            position: relative;
+            text-align: center;
+            white-space: nowrap;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            height: 37px;
+            padding: 0 16px;
+            color: #191919;
+            font-weight: 400;
+            border-radius: 4px;
+            border: 1px solid #c5c5c5;
+            border-bottom-color: #bcbcbc;
+            background-color: #fafafa;
+            box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #e7e7e7, 0 2px 3px rgba(0, 0, 0, 0.05);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+            margin-left: -1px;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
         }
     </style>
     <template>
@@ -97,8 +133,7 @@
         </div>
         <div id="licenseDialogExplanation"></div>
         <div id="vaadin-license-dialog-input">
-            <input id="licenseDialogInput" type="text" size="34">
-            <button on-click="_submit">Submit</button>
+            <input id="licenseDialogInput" type="text" size="34"><button on-click="_submit">Submit</button>
         </div>
     </template>
 
@@ -115,9 +150,9 @@
             },
 
             contents: {
-                unlicensed: 'To use {0} in development, each developer needs to have a valid license. Please <a href="https://vaadin.com/pro/licenses" target="_blank"> get a license from vaadin.com</a>, then enter your license key here:',
-                trial: 'You are currently using {0} with a trial license, which will expire {1}. You can <a href="https://vaadin.com/pro/licenses" target="_blank"> visit vaadin.com to get a paid license</a>, then enter your license key here:',
-                expired: 'Your {0} license has expired. Please <a href="https://vaadin.com/pro/licenses" target="_blank">renew your license at vaadin.com</a>, then refresh the page. Alternatively, if you have a new license key, you can enter it here:'
+                unlicensed: '<p class="vaadin-license-dialog">To use {0} in development, each developer needs to have a valid license.<p class="vaadin-license-dialog">Please <a href="https://vaadin.com/pro/licenses" target="_blank"> get a license from vaadin.com</a>, then enter your license key here:',
+                trial: '<p class="vaadin-license-dialog">You are currently using {0} with a trial license, which will expire {1}.<p class="vaadin-license-dialog">You can <a href="https://vaadin.com/pro/licenses" target="_blank"> visit vaadin.com to get a paid license</a>, then enter your license key here:',
+                expired: '<p class="vaadin-license-dialog">Your {0} license has expired.<p class="vaadin-license-dialog">Please <a href="https://vaadin.com/pro/licenses" target="_blank">renew your license at vaadin.com</a>, then refresh the page. Alternatively, if you have a new license key, you can enter it here:'
             },
 
             properties: {
