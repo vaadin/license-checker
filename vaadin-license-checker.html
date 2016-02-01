@@ -174,7 +174,7 @@
 
             _isValidLicense: function(productName, productVersion) {
                 return productName === this.productName && (
-                    productVersion === this.productVersion || !
+                    productVersion == this.productVersion || !
                     this._exists(productVersion));
             },
 
