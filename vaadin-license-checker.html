@@ -16,7 +16,7 @@
 
         </iron-localstorage>
 
-        <iron-ajax id="licenseRequest" url="[[licenseUrl]]" handle-as="json" on-response="_handleResultFromServer"
+        <iron-ajax id="licenseRequest" url="[[licenseUrl]]" headers='{"check-source": "webcomponent"}' handle-as="json" on-response="_handleResultFromServer"
         on-error="_handleErrorFromServer" debounce-duration="300">
         </iron-ajax>
     </template>
