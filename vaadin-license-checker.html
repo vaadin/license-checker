@@ -7,17 +7,16 @@
 <link rel="import" href="vaadin-license-box.html">
 <link rel="import" href="vaadin-license-dialog.html">
 <link rel="import" href="vaadin-license-notification.html">
+<link rel="import" href="vaadin-framework-identifier.html">
 
 <dom-module id="vaadin-license-checker">
 
     <template>
-        <iron-localstorage id="storageLicense" name="[[storageKey]]" value="{{licenseKey}}"
-        use-raw="true">
+        <iron-localstorage id="storageLicense" name="[[storageKey]]" value="{{licenseKey}}" use-raw="true">
 
         </iron-localstorage>
 
-        <iron-ajax id="licenseRequest" url="[[licenseUrl]]" headers='{"check-source": "webcomponent"}' handle-as="json" on-response="_handleResultFromServer"
-        on-error="_handleErrorFromServer" debounce-duration="300">
+        <iron-ajax id="licenseRequest" url="[[licenseUrl]]" headers='[[licenseRequestHeaders]]' handle-as="json" on-response="_handleResultFromServer" on-error="_handleErrorFromServer" debounce-duration="300">
         </iron-ajax>
     </template>
 
@@ -33,6 +32,8 @@
             licenseBox: undefined,
 
             notification: undefined,
+
+            frameworkIdentifier: undefined,
 
             licenseTypes: {
                 VALID: "valid",
@@ -60,7 +61,8 @@
                 storageKey: {
                     type: String,
                     computed: '_computeStorageKey(productName)'
-                }
+                },
+                licenseRequestHeaders: String
             },
 
             attached: function() {
@@ -94,6 +96,11 @@
                     this.notification = undefined;
                 }
 
+                if (this._existsAndAttached(this.frameworkIdentifier)) {
+                    this._removeFromParent(this.frameworkIdentifier);
+                    this.frameworkIdentifier = undefined;
+                }
+
                 if (this.instances[this.storageKey] === this) {
                     this.instances[this.storageKey] = undefined;
                 }
@@ -116,6 +123,9 @@
 
                 var licenseUrl = this._computeUrl(this.licenseUrlBase,
                     key);
+
+                this._identifyFramework();
+                this._setLicenseRequestHeaders();
 
                 this.$.licenseRequest.url = licenseUrl;
 
@@ -257,6 +267,22 @@
                 }
 
                 this.notification.open();
+            },
+
+            _identifyFramework: function() {
+                if (!this.frameworkIdentifier) {
+                    this.frameworkIdentifier = new FrameworkIdentifier();
+                    Polymer.dom(document.body).appendChild(this.frameworkIdentifier);
+                }
+                this.frameworkIdentifier.setFrameWorkAndVersion();
+            },
+
+            _setLicenseRequestHeaders: function() {
+                this.licenseRequestHeaders = {
+                    "check-source": "webcomponent",
+                    "framework": this.frameworkIdentifier.framework,
+                    "version": this.frameworkIdentifier.version
+                };
             }
         });
     </script>
