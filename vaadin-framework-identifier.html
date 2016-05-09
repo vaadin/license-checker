@@ -23,14 +23,7 @@
                     value: {
                         'Angular2': function() {
                             try {
-                                for (var prop in System.defined) {
-                                    if (
-                                        System.defined.hasOwnProperty(prop) &&
-                                        prop.indexOf('angular2/common') > -1
-                                    ) {
-                                        return true;
-                                    }
-                                }
+                                return window.ng;
                             } catch (e) {
                                 return false;
                             }
