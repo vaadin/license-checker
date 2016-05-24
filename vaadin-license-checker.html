@@ -263,7 +263,7 @@
             _showSuccessNotification: function() {
                 if (!this.notification) {
                     this.notification = new LicenseNotification();
-                    Polymer.dom(document.body).appendChild(this.notification);
+                    Polymer.dom(this.root).appendChild(this.notification);
                 }
 
                 this.notification.open();
@@ -272,7 +272,7 @@
             _identifyFramework: function() {
                 if (!this.frameworkIdentifier) {
                     this.frameworkIdentifier = new FrameworkIdentifier();
-                    Polymer.dom(document.body).appendChild(this.frameworkIdentifier);
+                    Polymer.dom(this).appendChild(this.frameworkIdentifier);
                 }
                 this.frameworkIdentifier.setFrameWorkAndVersion();
             },
