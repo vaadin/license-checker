@@ -54,10 +54,10 @@
                     document.querySelector(
                         '#licenseDialogClose').click();
                     flush(function() {
-                        expect(document.querySelector(
-                                'vaadin-license-box'
-                            ).style.display).to
-                            .not.equal('none');
+                        var licenseBox = document.querySelector(
+                            'vaadin-license-box'
+                        );
+
                         expect(document.querySelector(
                                 'vaadin-license-dialog'
                             ).style.display).to
@@ -67,7 +67,17 @@
                         ).textContent).to.equal(
                             'Unlicensed copy of Some Product'
                         );
-                        done();
+
+                        var licenseBoxCheck = function() {
+                            expect(licenseBox.style.display).to.not.equal('none');
+                            done();
+                        };
+
+                        if (licenseBox.__isAnimating) {
+                            licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
+                        } else {
+                            licenseBoxCheck();
+                        }
                     });
                 });
             });
@@ -79,10 +89,10 @@
                     document.querySelector(
                         '#licenseBoxContent').click();
                     flush(function() {
-                        expect(document.querySelector(
-                                'vaadin-license-dialog'
-                            ).style.display).to
-                            .not.equal('none');
+                        var licenseDialog = document.querySelector(
+                              'vaadin-license-dialog'
+                        );
+
                         expect(document.querySelector(
                                 'vaadin-license-box'
                             ).style.display).to
@@ -92,7 +102,17 @@
                         ).textContent).to.equal(
                             'Unlicensed copy of Some Product'
                         );
-                        done();
+
+                        var licenseDialogCheck = function() {
+                            expect(licenseDialog.style.display).to.not.equal('none');
+                            done();
+                        };
+
+                        if (licenseDialog.__isAnimating) {
+                            licenseDialog.addEventListener('iron-overlay-opened', licenseDialogCheck);
+                        } else {
+                            licenseDialogCheck();
+                        }
                     });
                 });
             });
