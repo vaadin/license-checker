@@ -47,18 +47,29 @@
                     checker.addEventListener('license-check-done',
                         function() {
                             flush(function() {
+                                var licenseBox = document.querySelector(
+                                        'vaadin-license-box'
+                                );
+
                                 expect(document.querySelector(
                                     'vaadin-license-dialog'
                                 )).to.not.exist;
                                 expect(document.querySelector(
-                                        'vaadin-license-box'
-                                    ).style.display).to
-                                    .not.equal('none');
-                                expect(document.querySelector(
                                     'vaadin-license-box #licenseBoxContent'
                                 ).className).to.contain(
                                     'expired');
-                                done();
+
+                                var licenseBoxCheck = function() {
+                                    expect(licenseBox.style.display).to.not.equal('none');
+                                    done();
+                                };
+
+                                // Check if still animating
+                                if (licenseBox.style.display === 'none') {
+                                    licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
+                                } else {
+                                    licenseBoxCheck();
+                                }
                             });
                         });
 
@@ -70,10 +81,10 @@
                 function(done) {
                     var secondCheck = function() {
                         flush(function() {
-                            expect(document.querySelector(
-                                    'vaadin-license-notification'
-                                ).style.display).to.not
-                                .equal('none');
+                            var licenseNotification = document.querySelector(
+                                'vaadin-license-notification'
+                            );
+
                             expect(document.querySelector(
                                 'vaadin-license-box'
                             ).style.display).to.equal(
@@ -82,7 +93,19 @@
                                 'vaadin-license-dialog'
                             ).style.display).to.equal(
                                 'none');
-                            done();
+
+                            var licenseNotificationCheck = function() {
+                                expect(licenseNotification.style.display).to
+                                    .not.equal('none');
+                                done();
+                            }
+
+                            // Check if licenseNotification still animating
+                            if (licenseNotification.style.display === 'none') {
+                                licenseNotification.addEventListener('iron-overlay-opened', licenseNotificationCheck);
+                            } else {
+                                licenseNotificationCheck();
+                            }
                         });
                     };
 
