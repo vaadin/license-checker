@@ -16,6 +16,10 @@
 
         </iron-localstorage>
 
+        <iron-localstorage id="storageLicenseCheckTime" name="[[storageKeyCheckTime]]" value="{{licenseCheckTime}}" use-raw="true">
+
+        </iron-localstorage>
+
         <iron-ajax id="licenseRequest" url="[[licenseUrl]]" headers='[[licenseRequestHeaders]]' handle-as="json" on-response="_handleResultFromServer" on-error="_handleErrorFromServer" debounce-duration="300">
         </iron-ajax>
     </template>
@@ -47,6 +51,9 @@
                     type: String,
                     notify: true
                 },
+                licenseCheckTime: {
+                    type: Number
+                },
                 licenseUrlBase: {
                     type: String,
                     value: "https://tools.vaadin.com/vaadin-license-server/licenses/"
@@ -62,6 +69,19 @@
                     type: String,
                     computed: '_computeStorageKey(productName)'
                 },
+                storageKeyCheckTime: {
+                    type: String,
+                    computed: '_computeStorageKeyCheckTime(productName)'
+                },
+                _yesterday: {
+                    type: Number,
+                    value: function() {
+                        var yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate()-1);
+                        return yesterday.getTime();
+                    },
+                    readOnly: true
+                },
                 licenseRequestHeaders: String
             },
 
@@ -75,8 +95,14 @@
                             this._checkLicenseKey();
 
                         } else {
-                            this._showLicenseDialog(this.licenseTypes
-                                .UNLICENSED);
+                            // Check if license was checked over 24 hours ago or never
+                            if (this.licenseCheckTime == null || (this.licenseCheckTime <= this._yesterday)) {
+                                this._showLicenseDialog(this.licenseTypes
+                                    .UNLICENSED);
+                            } else {
+                                this._showLicenseBox(this.licenseTypes.UNLICENSED);
+                            }
+
                         }
                     }
                 }
@@ -204,9 +230,15 @@
                     ".developer.license.key";
             },
 
+            _computeStorageKeyCheckTime: function(productName) {
+                return "vaadin." + productName +
+                    ".license.check.time";
+            },
+
             _licenseDialogClosed: function(event) {
                 this._showLicenseBox(event.detail.type, event.detail
                     .expiryEpoch);
+                this.licenseCheckTime = new Date().getTime();
             },
 
             _licenseBoxClosed: function(event) {
@@ -217,6 +249,7 @@
             _licenseBoxSubmit: function(event) {
                 //check the key without saving it first
                 this._checkLicenseKey(event.detail.licenseKey);
+                this.licenseCheckTime = new Date().getTime();
             },
 
             _showLicenseDialog: function(type, expiryEpoch) {
