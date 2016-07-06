@@ -336,6 +336,9 @@
                 if (!this.notification) {
                     this.notification = new LicenseNotification();
                     Polymer.dom(this.root).appendChild(this.notification);
+
+                    // Close success notification on click
+                    this.notification.addEventListener('click', this.notification.close);
                 }
 
                 this.notification.open();

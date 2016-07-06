@@ -7,6 +7,7 @@
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
     <link rel="import" href="../vaadin-license-checker.html">
 </head>
@@ -35,7 +36,7 @@
                 }
             });
 
-            test('checker shows success notification on valid license',
+            test('checker shows success notification on valid license and notification hides on click',
                 function(done) {
                     checker.addEventListener('license-check-done',
                         function() {
@@ -55,8 +56,23 @@
                                 var licenseNotificationCheck = function() {
                                     expect(licenseNotification.style.display).to
                                         .not.equal('none');
-                                    done();
+
+                                    MockInteractions.tap(licenseNotification);
+
+                                    // Check if licenseNotification still animating
+                                    if (licenseNotification.style.display !== 'none') {
+                                        licenseNotification.addEventListener('iron-overlay-closed', licenseNotificationHideCheck);
+                                    } else {
+                                        licenseNotificationHideCheck();
+                                    }
                                 }
+
+                                // Check that license notification is hidden after clicking it
+                                var licenseNotificationHideCheck = function() {
+                                  expect(licenseNotification.style.display).to
+                                      .equal('none');
+                                    done();
+                                };
 
                                 // Check if licenseNotification still animating
                                 if (licenseNotification.style.display === 'none') {
