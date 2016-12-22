@@ -1,30 +1,34 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
 
 <dom-module id="vaadin-license-dialog">
     <style>
         :host {
-            font: 300 16px/1.55 "Open Sans", sans-serif;
-            cursor: default;
-            box-sizing: border-box;
-            display: inline-block;
-            vertical-align: top;
-            text-align: left;
-            border-radius: 4px;
-            background-color: white;
-            color: #474747;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), 0 16px 80px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.09098);
-            padding: 0;
-            min-width: 148px !important;
-            min-height: 37px !important;
-            overflow: hidden !important;
-            transition: width 200ms, height 200ms;
-            margin-left: 0;
-            margin-top: 0;
-            z-index: 10000;
-            visibility: visible;
+          position: fixed;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.7);
         }
 
+        #dialog {
+          font: 300 16px/1.55 "Open Sans", sans-serif;
+          box-sizing: border-box;
+          text-align: left;
+          border-radius: 4px;
+          background-color: #fff;
+          color: #474747;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), 0 16px 80px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.09098);
+          padding: 0;
+          min-width: 148px;
+          min-height: 37px;
+          overflow: hidden;
+          z-index: 10000;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
         #header  {
             line-height: 36px;
             padding-left: 12px;
@@ -128,21 +132,21 @@
         }
     </style>
     <template>
-        <div id="licenseDialogHeader">
-            <span id="header">[[header]]</span>
-            <span id="licenseDialogClose" on-click="_close">&times;</span>
-        </div>
-        <div id="licenseDialogExplanation"></div>
-        <div id="vaadin-license-dialog-input">
-            <input id="licenseDialogInput" type="text" size="38" on-keydown="_inputKeyDown"><button on-click="_submit">Submit</button>
+        <div id="dialog">
+          <div id="licenseDialogHeader">
+              <span id="header">[[header]]</span>
+              <span id="licenseDialogClose" on-click="_close">&times;</span>
+          </div>
+          <div id="licenseDialogExplanation"></div>
+          <div id="vaadin-license-dialog-input">
+              <input id="licenseDialogInput" type="text" size="38" on-keydown="_inputKeyDown"><button on-click="_submit">Submit</button>
+          </div>
         </div>
     </template>
 
     <script>
         LicenseDialog = Polymer({
             is: "vaadin-license-dialog",
-
-            behaviors: [Polymer.IronOverlayBehavior],
 
             headers: {
                 unlicensed: "Unlicensed copy of {0}",
@@ -172,20 +176,6 @@
                     type: String,
                     observer: '_contentChanged',
                     computed: '_computeContent(type, productCaption, expiryEpoch)'
-                },
-
-                //override
-                withBackdrop: {
-                    type: Boolean,
-                    value: true
-                },
-                noCancelOnEscKey: {
-                    type: Boolean,
-                    value: true
-                },
-                noCancelOnOutsideClick: {
-                    type: Boolean,
-                    value: true
                 }
             },
 
@@ -197,7 +187,6 @@
                 this.fire('vaadin-license-dialog-submit', {
                     licenseKey: this.$.licenseDialogInput.value
                 });
-                this.close();
             },
 
             _close: function() {
@@ -205,7 +194,6 @@
                     type: this.type,
                     expiryEpoch: this.expiryEpoch
                 });
-                this.close();
             },
 
             _computeHeader: function(type, productCaption) {
