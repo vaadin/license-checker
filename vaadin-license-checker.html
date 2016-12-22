@@ -352,13 +352,16 @@
             _showSuccessNotification: function() {
                 if (!this.notification) {
                     this.notification = new LicenseNotification();
-                    Polymer.dom(this.root).appendChild(this.notification);
-
-                    // Close success notification on click
-                    this.notification.addEventListener('click', this.notification.close);
                 }
 
-                this.notification.open();
+                Polymer.dom(this.root).appendChild(this.notification);
+                // Close success notification on click
+                this.notification.addEventListener('click', this._hideSuccessNotification.bind(this));
+            },
+
+            _hideSuccessNotification: function() {
+              Polymer.dom(this.root).removeChild(this.notification);
+              this.notification.removeEventListener('click', this._hideSuccessNotification);
             },
 
             _identifyFramework: function() {
