@@ -90,8 +90,7 @@
                                 'none');
                             expect(document.querySelector(
                                 'vaadin-license-dialog'
-                            ).style.display).to.equal(
-                                'none');
+                            )).to.not.exist;
 
                             var licenseNotificationCheck = function() {
                                 expect(licenseNotification.style.display).to

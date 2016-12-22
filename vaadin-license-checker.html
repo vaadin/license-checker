@@ -278,6 +278,7 @@
                 this._showLicenseBox(event.detail.type, event.detail
                     .expiryEpoch);
                 this.licenseCheckTime = new Date().getTime();
+                this._hideLicenseDialog();
             },
 
             _licenseBoxClosed: function(event) {
@@ -289,19 +290,20 @@
                 //check the key without saving it first
                 this._checkLicenseKey(event.detail.licenseKey, true);
                 this.licenseCheckTime = new Date().getTime();
+                this._hideLicenseDialog();
             },
 
             _showLicenseDialog: function(type, expiryEpoch) {
                 if (!this.licenseDialog) {
                     this.licenseDialog = new LicenseDialog();
-                    Polymer.dom(document.body).appendChild(this.licenseDialog);
-                    this.licenseDialog.addEventListener(
-                        'vaadin-license-dialog-close', this._licenseDialogClosed
-                        .bind(this));
-                    this.licenseDialog.addEventListener(
-                        'vaadin-license-dialog-submit', this._licenseBoxSubmit
-                        .bind(this));
                 }
+                Polymer.dom(document.body).appendChild(this.licenseDialog);
+                this.licenseDialog.addEventListener(
+                    'vaadin-license-dialog-close', this._licenseDialogClosed
+                    .bind(this));
+                this.licenseDialog.addEventListener(
+                    'vaadin-license-dialog-submit', this._licenseBoxSubmit
+                    .bind(this));
 
                 this.licenseDialog.type = type;
                 this.licenseDialog.productCaption = this.productCaption;
@@ -309,8 +311,16 @@
                 if (type === this.licenseTypes.TRIAL) {
                     this.licenseDialog.expiryEpoch = expiryEpoch;
                 }
+            },
 
-                this.licenseDialog.open();
+            _hideLicenseDialog: function() {
+              Polymer.dom(document.body).removeChild(this.licenseDialog);
+              this.licenseDialog.removeEventListener(
+                  'vaadin-license-dialog-close', this._licenseDialogClosed
+                  .bind(this));
+              this.licenseDialog.removeEventListener(
+                  'vaadin-license-dialog-submit', this._licenseBoxSubmit
+                  .bind(this));
             },
 
             _showLicenseBox: function(type, expiryEpoch) {
