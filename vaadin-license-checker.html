@@ -97,7 +97,10 @@
                     type: Boolean,
                     value: false
                 },
-                licenseRequestHeaders: String
+                licenseRequestHeaders: String,
+                hideLicenseBoxReference: Object,
+                hideLicenseDialogReference: Object,
+                hideLicenseBoxSubmitReference: Object
             },
 
             attached: function() {
@@ -299,12 +302,12 @@
                     this.licenseDialog = new LicenseDialog();
                 }
                 Polymer.dom(document.body).appendChild(this.licenseDialog);
+                this.hideLicenseDialogReference = this._licenseDialogClosed.bind(this);
+                this.hideLicenseBoxSubmitReference = this._licenseBoxSubmit.bind(this)
                 this.licenseDialog.addEventListener(
-                    'vaadin-license-dialog-close', this._licenseDialogClosed
-                    .bind(this));
+                    'vaadin-license-dialog-close', this.hideLicenseDialogReference);
                 this.licenseDialog.addEventListener(
-                    'vaadin-license-dialog-submit', this._licenseBoxSubmit
-                    .bind(this));
+                    'vaadin-license-dialog-submit', this.hideLicenseBoxSubmitReference);
 
                 this.licenseDialog.type = type;
                 this.licenseDialog.productCaption = this.productCaption;
@@ -315,24 +318,21 @@
             },
 
             _hideLicenseDialog: function() {
+              this.licenseDialog.removeEventListener(
+                  'vaadin-license-dialog-close', this.hideLicenseDialogReference);
+              this.licenseDialog.removeEventListener(
+                  'vaadin-license-dialog-submit', this.hideLicenseBoxSubmitReference);
               Polymer.dom(document.body).removeChild(this.licenseDialog);
-              this.licenseDialog.removeEventListener(
-                  'vaadin-license-dialog-close', this._licenseDialogClosed
-                  .bind(this));
-              this.licenseDialog.removeEventListener(
-                  'vaadin-license-dialog-submit', this._licenseBoxSubmit
-                  .bind(this));
             },
 
             _showLicenseBox: function(type, expiryEpoch) {
                 if (!this.licenseBox) {
                     this.licenseBox = new LicenseBox();
                 }
-
                 Polymer.dom(document.body).appendChild(this.licenseBox);
+                this.hideLicenseBoxReference = this._licenseBoxClosed.bind(this)
                 this.licenseBox.addEventListener(
-                    'vaadin-license-box-close', this._licenseBoxClosed
-                    .bind(this));
+                    'vaadin-license-box-close', this.hideLicenseBoxReference);
 
                 this.licenseBox.type = type;
                 this.licenseBox.productCaption = this.productCaption;
@@ -343,10 +343,10 @@
             },
 
             _hideLicenseBox: function() {
-              Polymer.dom(document.body).removeChild(this.licenseBox);
               this.licenseBox.removeEventListener(
-                  'vaadin-license-box-close', this._licenseBoxClosed
-                  .bind(this));
+                  'vaadin-license-box-close', this.hideLicenseBoxReference);
+              Polymer.dom(document.body).removeChild(this.licenseBox);
+
             },
 
             _showSuccessNotification: function() {
@@ -356,12 +356,14 @@
 
                 Polymer.dom(this.root).appendChild(this.notification);
                 // Close success notification on click
-                this.notification.addEventListener('click', this._hideSuccessNotification.bind(this));
+                this.hideSuccessReference = this._hideSuccessNotification.bind(this)
+                this.notification.addEventListener('click', this.hideSuccessReference);
             },
 
             _hideSuccessNotification: function() {
+              this.notification.removeEventListener('click',
+                  this.hideSuccessReference);
               Polymer.dom(this.root).removeChild(this.notification);
-              this.notification.removeEventListener('click', this._hideSuccessNotification);
             },
 
             _identifyFramework: function() {
