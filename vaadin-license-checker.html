@@ -284,6 +284,7 @@
             _licenseBoxClosed: function(event) {
                 this._showLicenseDialog(event.detail.type, event.detail
                     .expiryEpoch);
+                this._hideLicenseBox();
             },
 
             _licenseBoxSubmit: function(event) {
@@ -326,11 +327,12 @@
             _showLicenseBox: function(type, expiryEpoch) {
                 if (!this.licenseBox) {
                     this.licenseBox = new LicenseBox();
-                    Polymer.dom(document.body).appendChild(this.licenseBox);
-                    this.licenseBox.addEventListener(
-                        'vaadin-license-box-close', this._licenseBoxClosed
-                        .bind(this));
                 }
+
+                Polymer.dom(document.body).appendChild(this.licenseBox);
+                this.licenseBox.addEventListener(
+                    'vaadin-license-box-close', this._licenseBoxClosed
+                    .bind(this));
 
                 this.licenseBox.type = type;
                 this.licenseBox.productCaption = this.productCaption;
@@ -338,8 +340,13 @@
                 if (type === this.licenseTypes.TRIAL) {
                     this.licenseBox.expiryEpoch = expiryEpoch;
                 }
+            },
 
-                this.licenseBox.open();
+            _hideLicenseBox: function() {
+              Polymer.dom(document.body).removeChild(this.licenseBox);
+              this.licenseBox.removeEventListener(
+                  'vaadin-license-box-close', this._licenseBoxClosed
+                  .bind(this));
             },
 
             _showSuccessNotification: function() {

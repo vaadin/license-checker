@@ -95,8 +95,7 @@
 
                         expect(document.querySelector(
                                 'vaadin-license-box'
-                            ).style.display).to
-                            .equal('none');
+                            )).to.not.exist;
                         expect(document.querySelector(
                             'vaadin-license-dialog #licenseDialogHeader span'
                         ).textContent).to.equal(
