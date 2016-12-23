@@ -97,7 +97,10 @@
                     type: Boolean,
                     value: false
                 },
-                licenseRequestHeaders: String
+                licenseRequestHeaders: String,
+                hideLicenseBoxReference: Object,
+                hideLicenseDialogReference: Object,
+                hideLicenseBoxSubmitReference: Object
             },
 
             attached: function() {
@@ -278,30 +281,33 @@
                 this._showLicenseBox(event.detail.type, event.detail
                     .expiryEpoch);
                 this.licenseCheckTime = new Date().getTime();
+                this._hideLicenseDialog();
             },
 
             _licenseBoxClosed: function(event) {
                 this._showLicenseDialog(event.detail.type, event.detail
                     .expiryEpoch);
+                this._hideLicenseBox();
             },
 
             _licenseBoxSubmit: function(event) {
                 //check the key without saving it first
                 this._checkLicenseKey(event.detail.licenseKey, true);
                 this.licenseCheckTime = new Date().getTime();
+                this._hideLicenseDialog();
             },
 
             _showLicenseDialog: function(type, expiryEpoch) {
                 if (!this.licenseDialog) {
                     this.licenseDialog = new LicenseDialog();
-                    Polymer.dom(document.body).appendChild(this.licenseDialog);
-                    this.licenseDialog.addEventListener(
-                        'vaadin-license-dialog-close', this._licenseDialogClosed
-                        .bind(this));
-                    this.licenseDialog.addEventListener(
-                        'vaadin-license-dialog-submit', this._licenseBoxSubmit
-                        .bind(this));
                 }
+                Polymer.dom(document.body).appendChild(this.licenseDialog);
+                this.hideLicenseDialogReference = this._licenseDialogClosed.bind(this);
+                this.hideLicenseBoxSubmitReference = this._licenseBoxSubmit.bind(this)
+                this.licenseDialog.addEventListener(
+                    'vaadin-license-dialog-close', this.hideLicenseDialogReference);
+                this.licenseDialog.addEventListener(
+                    'vaadin-license-dialog-submit', this.hideLicenseBoxSubmitReference);
 
                 this.licenseDialog.type = type;
                 this.licenseDialog.productCaption = this.productCaption;
@@ -309,18 +315,24 @@
                 if (type === this.licenseTypes.TRIAL) {
                     this.licenseDialog.expiryEpoch = expiryEpoch;
                 }
+            },
 
-                this.licenseDialog.open();
+            _hideLicenseDialog: function() {
+              this.licenseDialog.removeEventListener(
+                  'vaadin-license-dialog-close', this.hideLicenseDialogReference);
+              this.licenseDialog.removeEventListener(
+                  'vaadin-license-dialog-submit', this.hideLicenseBoxSubmitReference);
+              Polymer.dom(document.body).removeChild(this.licenseDialog);
             },
 
             _showLicenseBox: function(type, expiryEpoch) {
                 if (!this.licenseBox) {
                     this.licenseBox = new LicenseBox();
-                    Polymer.dom(document.body).appendChild(this.licenseBox);
-                    this.licenseBox.addEventListener(
-                        'vaadin-license-box-close', this._licenseBoxClosed
-                        .bind(this));
                 }
+                Polymer.dom(document.body).appendChild(this.licenseBox);
+                this.hideLicenseBoxReference = this._licenseBoxClosed.bind(this)
+                this.licenseBox.addEventListener(
+                    'vaadin-license-box-close', this.hideLicenseBoxReference);
 
                 this.licenseBox.type = type;
                 this.licenseBox.productCaption = this.productCaption;
@@ -328,20 +340,30 @@
                 if (type === this.licenseTypes.TRIAL) {
                     this.licenseBox.expiryEpoch = expiryEpoch;
                 }
+            },
 
-                this.licenseBox.open();
+            _hideLicenseBox: function() {
+              this.licenseBox.removeEventListener(
+                  'vaadin-license-box-close', this.hideLicenseBoxReference);
+              Polymer.dom(document.body).removeChild(this.licenseBox);
+
             },
 
             _showSuccessNotification: function() {
                 if (!this.notification) {
                     this.notification = new LicenseNotification();
-                    Polymer.dom(this.root).appendChild(this.notification);
-
-                    // Close success notification on click
-                    this.notification.addEventListener('click', this.notification.close);
                 }
 
-                this.notification.open();
+                Polymer.dom(this.root).appendChild(this.notification);
+                // Close success notification on click
+                this.hideSuccessReference = this._hideSuccessNotification.bind(this)
+                this.notification.addEventListener('click', this.hideSuccessReference);
+            },
+
+            _hideSuccessNotification: function() {
+              this.notification.removeEventListener('click',
+                  this.hideSuccessReference);
+              Polymer.dom(this.root).removeChild(this.notification);
             },
 
             _identifyFramework: function() {

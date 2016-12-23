@@ -59,9 +59,8 @@
                         );
 
                         expect(document.querySelector(
-                                'vaadin-license-dialog'
-                            ).style.display).to
-                            .equal('none');
+                            'vaadin-license-dialog'
+                        )).to.not.exist;
                         expect(document.querySelector(
                             'vaadin-license-box #licenseBoxContent'
                         ).textContent).to.equal(
@@ -96,8 +95,7 @@
 
                         expect(document.querySelector(
                                 'vaadin-license-box'
-                            ).style.display).to
-                            .equal('none');
+                            )).to.not.exist;
                         expect(document.querySelector(
                             'vaadin-license-dialog #licenseDialogHeader span'
                         ).textContent).to.equal(
