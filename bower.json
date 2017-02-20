@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "iron-input": "PolymerElements/iron-input#^1.0.0",
-    "web-component-tester": "^3.3.10",
+    "web-component-tester": "4.0.3",
     "iron-test-helpers": "PolymerElements/iron-test-helpers#^1.0.0"
   }
 }

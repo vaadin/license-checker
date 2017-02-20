@@ -9,6 +9,6 @@
   "devDependencies": {
     "bower": "^1.4.1",
     "gulp": "^3.8.11",
-    "web-component-tester": "^3.3.0"
+    "web-component-tester": "4.0.3"
   }
 }
