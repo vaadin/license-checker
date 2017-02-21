@@ -59,6 +59,10 @@
                         );
 
                         expect(document.querySelector(
+                            'vaadin-license-dialog'
+                        )).to.not.exist;
+
+                        expect(document.querySelector(
                             'vaadin-license-box #licenseBoxContent'
                         ).textContent).to.equal(
                             'Unlicensed copy of Some Product'
@@ -92,8 +96,7 @@
 
                         expect(document.querySelector(
                                 'vaadin-license-box'
-                            ).style.display).to
-                            .equal('none');
+                            )).to.not.exist;
                         expect(document.querySelector(
                             'vaadin-license-dialog #licenseDialogHeader span'
                         ).textContent).to.equal(

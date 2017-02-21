@@ -16,7 +16,6 @@
   "dependencies": {
     "iron-ajax": "PolymerElements/iron-ajax#^1.0.0",
     "iron-localstorage": "PolymerElements/iron-localstorage#^1.0.0",
-    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#^1.0.0",
     "polymer": "Polymer/polymer#^1.0.0",
     "font-awesome": "^4.5.0"
   },

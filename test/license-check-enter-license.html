@@ -41,45 +41,23 @@
                     checker.addEventListener('license-check-done',
                         function() {
                             flush(function() {
-                                var licenseNotification = document.querySelector(
-                                    'vaadin-license-notification'
-                                );
-
                                 expect(document.querySelector(
                                     'vaadin-license-box'
                                 )).to.not.exist;
                                 expect(document.querySelector(
-                                        'vaadin-license-dialog'
-                                    ).style.display).to
-                                    .equal('none');
+                                    'vaadin-license-dialog'
+                                )).to.not.exist;
 
-                                var licenseNotificationCheck = function() {
-                                    expect(licenseNotification.style.display).to
-                                        .not.equal('none');
-
-                                    MockInteractions.tap(licenseNotification);
-
-                                    // Check if licenseNotification still animating
-                                    if (licenseNotification.style.display !== 'none') {
-                                        licenseNotification.addEventListener('iron-overlay-closed', licenseNotificationHideCheck);
-                                    } else {
-                                        licenseNotificationHideCheck();
-                                    }
-                                }
-
-                                // Check that license notification is hidden after clicking it
-                                var licenseNotificationHideCheck = function() {
-                                  expect(licenseNotification.style.display).to
-                                      .equal('none');
-                                    done();
-                                };
-
-                                // Check if licenseNotification still animating
-                                if (licenseNotification.style.display === 'none') {
-                                    licenseNotification.addEventListener('iron-overlay-opened', licenseNotificationCheck);
-                                } else {
-                                    licenseNotificationCheck();
-                                }
+                                expect(document.querySelector(
+                                    'vaadin-license-notification'
+                                )).to.exist;
+                                document.querySelector(
+                                    'vaadin-license-notification'
+                                ).click();
+                                expect(document.querySelector(
+                                    'vaadin-license-notification'
+                                )).to.not.exist;
+                                done();
                             });
                         });
 

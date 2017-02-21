@@ -1,5 +1,4 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
 
 <dom-module id="vaadin-license-box">
     <style>
@@ -50,8 +49,6 @@
         LicenseBox = Polymer({
             is: "vaadin-license-box",
 
-            behaviors: [Polymer.IronOverlayBehavior],
-
             contents: {
                 unlicensed: 'Unlicensed copy of {0}',
                 trial: '{0} trial license',
@@ -66,16 +63,6 @@
                 type: String,
                 productCaption: String,
                 expiryEpoch: Number,
-
-                //override
-                noCancelOnEscKey: {
-                    type: Boolean,
-                    value: true
-                },
-                noCancelOnOutsideClick: {
-                    type: Boolean,
-                    value: true
-                }
             },
 
             _close: function() {
@@ -83,7 +70,6 @@
                     type: this.type,
                     expiryEpoch: this.expiryEpoch
                 });
-                this.close();
             },
 
             _computeContent: function(type, productCaption) {
