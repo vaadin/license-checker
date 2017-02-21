@@ -34,21 +34,25 @@
         #message {
             font-size: 19px;
             line-height: 1;
-            vertical-align: middle;
             color: #2c9720;
             font-weight: 400;
         }
 
-        #message:before {
-            font-family: FontAwesome;
-            content: "\f00c";
-            margin-right: 0.5em;
+        #message svg,
+        #message span {
+          vertical-align: middle;
         }
+
     </style>
 
     <template>
       <div id="dialog">
-        <div id="message">License key accepted</div>
+        <div id="message">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+            <path fill="#2c9720" d="M7.3 14.2l-7.1-5.2 1.7-2.4 4.8 3.5 6.6-8.5 2.3 1.8z"></path>
+          </svg>
+          <span>License key accepted</span>
+        </div>
       </div>
     </template>
 
