@@ -20,7 +20,9 @@
             'license-check-no-license.html',
             'license-check-trial-license.html',
             'license-dialog-test.html'
-        ]);
+        ].reduce((suites, suite) => {
+            return suites.concat([suite, suite + '?wc-shadydom=true'])
+        }, []));
     </script>
 </body>
 
