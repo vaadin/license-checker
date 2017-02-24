@@ -41,92 +41,61 @@
                 }
             });
 
-            test(
-                'checker shows trial box on load when license is a trial license',
-                function(done) {
-                    checker.addEventListener('license-check-done',
-                        function() {
-                            flush(function() {
-                                var licenseBox = document.querySelector(
-                                    'vaadin-license-box'
-                                );
+            test('checker shows trial box on load when license is a trial license',function(done) {
+                checker.addEventListener('license-check-done', function() {
+                    flush(function() {
+                        var licenseBox = document.querySelector('vaadin-license-box');
 
-                                expect(document.querySelector(
-                                    'vaadin-license-dialog'
-                                )).to.not.exist;
-                                expect(document.querySelector(
-                                    'vaadin-license-box #licenseBoxContent'
-                                ).className).to.contain(
-                                    'trial');
+                        expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
+                        expect(licenseBox.$.licenseBoxContent.className).to.contain('trial');
 
-                                var licenseBoxCheck = function() {
-                                    expect(licenseBox.style.display).to.not.equal('none');
-                                    done();
-                                };
+                        var licenseBoxCheck = function() {
+                            expect(licenseBox.style.display).to.not.equal('none');
+                            done();
+                        };
 
-                                // Check if licenseBox still animating
-                                if (licenseBox.style.display === 'none') {
-                                    licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
-                                } else {
-                                    licenseBoxCheck();
-                                }
-                            });
-                        });
-
-                    document.body.appendChild(checker);
+                        // Check if licenseBox still animating
+                        if (licenseBox.style.display === 'none') {
+                            licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
+                        } else {
+                            licenseBoxCheck();
+                        }
+                    });
                 });
 
-            test('user can enter valid license to trial license dialog',
-                function(done) {
+                document.body.appendChild(checker);
+            });
+
+            test('user can enter valid license to trial license dialog',function(done) {
                     var secondCheck = function() {
                         flush(function() {
-                            var licenseNotification = document.querySelector(
-                                'vaadin-license-notification'
-                            );
+                            var licenseNotification = checker.shadowRoot.querySelector('vaadin-license-notification');
 
-                            expect(document.querySelector(
-                                'vaadin-license-box'
-                            )).to.not.exist;
-                            expect(document.querySelector(
-                                'vaadin-license-dialog'
-                            )).to.not.exist;
+                            expect(document.querySelector('vaadin-license-box')).to.not.exist;
+                            expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
 
                             var licenseNotificationCheck = function() {
-                                expect(licenseNotification.style.display).to
-                                    .not.equal('none');
+                                expect(licenseNotification.style.display).to.not.equal('none');
                                 done();
                             }
 
-                            // Check if licenseNotification still animating
-                            if (licenseNotification.style.display === 'none') {
-                                licenseNotification.addEventListener('iron-overlay-opened', licenseNotificationCheck);
-                            } else {
-                                licenseNotificationCheck();
-                            }
+                            licenseNotificationCheck();
                         });
                     };
 
                     var firstCheck = function() {
-                        checker.removeEventListener(
-                            'license-check-done',
-                            firstCheck);
-                        checker.addEventListener(
-                            'license-check-done',
-                            secondCheck);
-                        document.querySelector(
-                            '#licenseBoxContent').click();
-                        document.querySelector(
-                                'vaadin-license-dialog #licenseDialogInput'
-                            ).value =
-                            '12345678-1234-abcd-1234-12345678abcd';
-                        document.querySelector(
-                                'vaadin-license-dialog button')
-                            .click();
+                        checker.removeEventListener('license-check-done', firstCheck);
+                        checker.addEventListener('license-check-done', secondCheck);
+                        var licenseBox = document.querySelector('vaadin-license-box');
+                        licenseBox.$.licenseBoxContent.click();
+
+                        var dialog = document.querySelector('vaadin-license-dialog');
+                        dialog.$.licenseDialogInput.value = '12345678-1234-abcd-1234-12345678abcd';
+                        dialog.$.licenseDialogButton.click();
                     };
 
 
-                    checker.addEventListener('license-check-done',
-                        firstCheck);
+                    checker.addEventListener('license-check-done',firstCheck);
 
                     document.body.appendChild(checker);
                 });

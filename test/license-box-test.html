@@ -12,34 +12,25 @@
 </head>
 
 <body>
-
     <vaadin-license-box id="errorbox" type="unlicensed" product-name="some-product"></vaadin-license-box>
-
-    <vaadin-license-box id="errorbox-forclick" type="unlicensed"></vaadin-license-box>
-
     <vaadin-license-box id="evalbox" product-name="some-product" type="trial"></vaadin-license-box>
+    <vaadin-license-box id="errorbox-forclick" type="unlicensed"></vaadin-license-box>
 
     <script>
         suite('<vaadin-license-box>', function() {
 
             test('appends type as a CSS class', function() {
-                var errorBoxContent = document.querySelector(
-                    '#errorbox #licenseBoxContent');
-                var evalBoxContent = document.querySelector(
-                    '#evalbox #licenseBoxContent');
+                var errorBoxContent = document.querySelector('#errorbox').$.licenseBoxContent;
+                var evalBoxContent = document.querySelector('#evalbox').$.licenseBoxContent;
 
-                expect(errorBoxContent.className).to.contain(
-                    'unlicensed');
-                expect(evalBoxContent.className).to.contain(
-                    'trial');
+                expect(errorBoxContent.className).to.contain('unlicensed');
+                expect(evalBoxContent.className).to.contain('trial');
             });
 
             test('fires event on click', function(done) {
-                var errorBoxForClick = document.querySelector(
-                    '#errorbox-forclick');
+                var errorBoxForClick = document.querySelector('#errorbox-forclick');
 
-                errorBoxForClick.addEventListener(
-                    'vaadin-license-box-close', new function() {
+                errorBoxForClick.addEventListener('vaadin-license-box-close', new function() {
                         done();
                     });
 

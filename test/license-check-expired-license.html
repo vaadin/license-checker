@@ -15,7 +15,6 @@
 
     <script>
         suite('scenario: expired license', function() {
-
             var checker;
 
             setup(function() {
@@ -41,99 +40,60 @@
                 }
             });
 
-            test(
-                'checker shows expired box on load when license is expired',
-                function(done) {
-                    checker.addEventListener('license-check-done',
-                        function() {
-                            flush(function() {
-                                var licenseBox = document.querySelector(
-                                        'vaadin-license-box'
-                                );
+            test('checker shows expired box on load when license is expired', function(done) {
+                checker.addEventListener('license-check-done', function() {
+                    flush(function() {
+                        var licenseBox = document.querySelector('vaadin-license-box');
 
-                                expect(document.querySelector(
-                                    'vaadin-license-dialog'
-                                )).to.not.exist;
-                                expect(document.querySelector(
-                                    'vaadin-license-box #licenseBoxContent'
-                                ).className).to.contain(
-                                    'expired');
+                        expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
+                        expect(licenseBox.$.licenseBoxContent.className).to.contain('expired');
 
-                                var licenseBoxCheck = function() {
-                                    expect(licenseBox.style.display).to.not.equal('none');
-                                    done();
-                                };
+                        var licenseBoxCheck = function() {
+                            expect(licenseBox.style.display).to.not.equal('none');
+                            done();
+                        };
 
-                                // Check if still animating
-                                if (licenseBox.style.display === 'none') {
-                                    licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
-                                } else {
-                                    licenseBoxCheck();
-                                }
-                            });
-                        });
-
-                    document.body.appendChild(checker);
+                        licenseBoxCheck();
+                    });
                 });
 
-            test(
-                'user can enter valid license to expired license dialog',
-                function(done) {
-                    var secondCheck = function() {
-                        flush(function() {
-                            var licenseNotification = document.querySelector(
-                                'vaadin-license-notification'
-                            );
+                document.body.appendChild(checker);
+            });
 
-                            expect(document.querySelector(
-                                'vaadin-license-box'
-                            )).to.not.exist;
-                            expect(document.querySelector(
-                                'vaadin-license-dialog'
-                            )).to.not.exist;
+            test('user can enter valid license to expired license dialog', function(done) {
+                var secondCheck = function() {
+                    flush(function() {
+                        var licenseNotification = checker.shadowRoot.querySelector('vaadin-license-notification');
 
-                            var licenseNotificationCheck = function() {
-                                expect(licenseNotification.style.display).to
-                                    .not.equal('none');
-                                done();
-                            }
+                        expect(document.querySelector('vaadin-license-box')).to.not.exist;
+                        expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
 
-                            // Check if licenseNotification still animating
-                            if (licenseNotification.style.display === 'none') {
-                                licenseNotification.addEventListener('iron-overlay-opened', licenseNotificationCheck);
-                            } else {
-                                licenseNotificationCheck();
-                            }
-                        });
-                    };
+                        var licenseNotificationCheck = function() {
+                            expect(licenseNotification.style.display).to.not.equal('none');
+                            done();
+                        }
 
-                    var firstCheck = function() {
-                        flush(function() {
-                            checker.removeEventListener(
-                                'license-check-done',
-                                firstCheck);
-                            checker.addEventListener(
-                                'license-check-done',
-                                secondCheck);
-                            document.querySelector(
-                                '#licenseBoxContent'
-                            ).click();
-                            document.querySelector(
-                                    'vaadin-license-dialog #licenseDialogInput'
-                                ).value =
-                                '12345678-1234-abcd-1234-12345678abcd';
-                            document.querySelector(
-                                    'vaadin-license-dialog button'
-                                )
-                                .click();
-                        });
-                    };
+                        licenseNotificationCheck();
+                    });
+                };
 
-                    checker.addEventListener('license-check-done',
-                        firstCheck);
+                var firstCheck = function() {
+                    flush(function() {
+                        checker.removeEventListener('license-check-done', firstCheck);
+                        checker.addEventListener('license-check-done', secondCheck);
+                        var licenseBox = document.querySelector('vaadin-license-box');
+                        licenseBox.$.licenseBoxContent.click();
+                        var dialog = document.querySelector('vaadin-license-dialog');
 
-                    document.body.appendChild(checker);
-                });
+                        dialog.$.licenseDialogInput.value = '12345678-1234-abcd-1234-12345678abcd';
+                        dialog.$.licenseDialogButton.click();
+                    });
+                };
+
+                checker.addEventListener('license-check-done', firstCheck);
+
+                document.body.appendChild(checker);
+            });
         });
     </script>
 
