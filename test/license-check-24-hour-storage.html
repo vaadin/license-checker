@@ -24,6 +24,8 @@
                 checker = new LicenseChecker();
                 checker.productName = 'some-product';
                 checker.productCaption = 'Some Product';
+                checker.productVersion = 2;
+                checker.licenseUrlBase = "../test-license/";
 
                 window.localStorage.setItem(
                     'vaadin.some-product.license.check.time',
@@ -55,75 +57,47 @@
                 }
             });
 
-            test(
-                'Box is shown when license was last checked under 24 hours ago',
-                function(done) {
+            test('Box is shown when license was last checked under 24 hours ago', function(done) {
+                flush(function() {
+                    var licenseBox = document.querySelector('vaadin-license-box');
+
+                    var licenseBoxCheck = function() {
+                        expect(licenseBox.style.display).to.not.equal('none');
+                        done();
+                    };
+
+                    licenseBoxCheck();
+                    setLicense = true;
+                });
+            });
+
+            test('Box and dialog are hidden when valid license was last checked under 24 hours ago', function(done) {
+                checker.addEventListener('license-check-done', function() {
                     flush(function() {
-
-                        var licenseBox = document.querySelector(
-                            'vaadin-license-box'
-                        );
-
-                        var licenseBoxCheck = function() {
-                            expect(licenseBox.style.display).to.not.equal('none');
-                            done();
-                        };
-
-                        // Check if licenseBox still animating
-                        if (licenseBox.style.display === 'none') {
-                            licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
-                        } else {
-                            licenseBoxCheck();
-                        }
-                        setLicense = true;
+                        var licenseBox = document.querySelector('vaadin-license-box');
+                        var licenseDialog = document.querySelector('vaadin-license-dialog');
+                        expect(licenseBox).to.equal(null);
+                        expect(licenseDialog).to.equal(null);
+                        done();
                     });
                 });
+                setLicense = false;
+                setYesterday = true;
+            });
 
-            test(
-                'Box and dialog are hidden when valid license was last checked under 24 hours ago',
-                function(done) {
-                    flush(function() {
-                        checker.addEventListener('license-check-done', function() {
-                              flush(function() {
-                                  var licenseBox = document.querySelector(
-                                      'vaadin-license-box'
-                                  );
+            test('Dialog is shown when license was last checked over 24 hours ago', function(done) {
+                flush(function() {
+                    var licenseDialog = document.querySelector('vaadin-license-dialog');
 
-                                  var licenseDialog = document.querySelector(
-                                        'vaadin-license-dialog'
-                                  );
-                                  expect(licenseBox).to.equal(null);
-                                  expect(licenseDialog).to.equal(null);
-                                  done();
-                              });
-                        });
-                        setLicense = false;
-                        setYesterday = true;
-                    });
+                    var licenseDialogCheck = function() {
+                        expect(licenseDialog.style.display).to.not.equal('none');
+                        done();
+                    };
+
+                    licenseDialogCheck();
+                    setYesterday = false;
                 });
-
-            test(
-                'Dialog is shown when license was last checked over 24 hours ago',
-                function(done) {
-                    flush(function() {
-
-                        var licenseDialog = document.querySelector(
-                              'vaadin-license-dialog'
-                        );
-
-                        var licenseDialogCheck = function() {
-                            expect(licenseDialog.style.display).to.not.equal('none');
-                            done();
-                        };
-                        // Check if licenseDialog still animating
-                        if (licenseDialog.style.display === 'none') {
-                            licenseDialog.addEventListener('iron-overlay-opened', licenseDialogCheck);
-                        } else {
-                            licenseDialogCheck();
-                        }
-                        setYesterday = false;
-                    });
-                });
+            });
         });
     </script>
 
