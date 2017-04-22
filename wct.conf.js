@@ -5,11 +5,26 @@ module.exports = {
         sauce: {
             disabled: true,
             browsers: [
-                "Windows 10/microsoftedge",
-                "Windows 10/internet explorer",
-                "Windows 10/chrome",
-                "Windows 10/firefox",
-                "OS X 10.10/safari"
+                {
+                    'browserName': 'MicrosoftEdge',
+                    'platform': 'Windows 10',
+                    'version': '14.14393'
+                },
+                {
+                    'browserName': 'Chrome',
+                    'platform': 'Windows 10',
+                    'version': '55.0'
+                },
+                {
+                    'browserName': 'Firefox',
+                    'platform': 'Windows 10',
+                    'version': '50.0'
+                },
+                {
+                    'browserName': 'safari',
+                    'platform': 'OS X 10.11',
+                    'version': '10.0'
+                }
             ]
         }
     }

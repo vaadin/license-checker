@@ -139,7 +139,7 @@
           </div>
           <div id="licenseDialogExplanation"></div>
           <div id="vaadin-license-dialog-input">
-              <input id="licenseDialogInput" type="text" size="38" on-keydown="_inputKeyDown"><button on-click="_submit">Submit</button>
+              <input id="licenseDialogInput" type="text" size="38" on-keydown="_inputKeyDown"><button id="licenseDialogButton" on-click="_submit">Submit</button>
           </div>
         </div>
     </template>
@@ -197,39 +197,41 @@
             },
 
             _computeHeader: function(type, productCaption) {
-                return this.headers[type].replace('{0}',
-                    productCaption);
+                if(this.headers.hasOwnProperty(type)){
+                    return this.headers[type].replace('{0}', productCaption);
+                }
             },
 
             _computeContent: function(type, productCaption, expiryEpoch) {
-                if (type === 'trial') {
-                    var timeToExpiry = expiryEpoch - Date.now();
-                    var hoursToExpiry = Math.round(timeToExpiry /
-                        1000 / 60 / 60);
-                    var daysToExpiry = Math.round(timeToExpiry /
-                        1000 / 60 / 60 / 24);
-                    var expiryDate = new Date(expiryEpoch);
-                    var expiryDateISOFormat = expiryDate.getFullYear() +
-                        '-' + this._padDate(expiryDate.getMonth()) +
-                        '-' + this._padDate(expiryDate.getDate());
+                if(this.contents.hasOwnProperty(type)){
+                    if (type === 'trial') {
+                        var timeToExpiry = expiryEpoch - Date.now();
+                        var hoursToExpiry = Math.round(timeToExpiry /
+                            1000 / 60 / 60);
+                        var daysToExpiry = Math.round(timeToExpiry /
+                            1000 / 60 / 60 / 24);
+                        var expiryDate = new Date(expiryEpoch);
+                        var expiryDateISOFormat = expiryDate.getFullYear() +
+                            '-' + this._padDate(expiryDate.getMonth()) +
+                            '-' + this._padDate(expiryDate.getDate());
 
-                    if (hoursToExpiry < 24) {
-                        return this._replaceArguments(this.contents[
-                                type], productCaption, 'in ' +
-                            hoursToExpiry + ' hours');
-                    } else if (daysToExpiry < 30) {
-                        return this._replaceArguments(this.contents[
-                                type], productCaption, 'in ' +
-                            daysToExpiry + ' days');
+                        if (hoursToExpiry < 24) {
+                            return this._replaceArguments(this.contents[
+                                    type], productCaption, 'in ' +
+                                hoursToExpiry + ' hours');
+                        } else if (daysToExpiry < 30) {
+                            return this._replaceArguments(this.contents[
+                                    type], productCaption, 'in ' +
+                                daysToExpiry + ' days');
+                        } else {
+                            return this._replaceArguments(this.contents[
+                                    type], productCaption, 'on ' +
+                                expiryDateISOFormat);
+                        }
                     } else {
                         return this._replaceArguments(this.contents[
-                                type], productCaption, 'on ' +
-                            expiryDateISOFormat);
+                            type], productCaption);
                     }
-
-                } else {
-                    return this._replaceArguments(this.contents[
-                        type], productCaption);
                 }
             },
 
@@ -239,7 +241,6 @@
                     newString = newString.replace('{' + (i - 1) +
                         '}', arguments[i]);
                 }
-
                 return newString;
             },
 
