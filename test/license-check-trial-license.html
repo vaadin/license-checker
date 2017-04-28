@@ -49,17 +49,8 @@
                         expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
                         expect(licenseBox.$.licenseBoxContent.className).to.contain('trial');
 
-                        var licenseBoxCheck = function() {
-                            expect(licenseBox.style.display).to.not.equal('none');
-                            done();
-                        };
-
-                        // Check if licenseBox still animating
-                        if (licenseBox.style.display === 'none') {
-                            licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
-                        } else {
-                            licenseBoxCheck();
-                        }
+                        expect(licenseBox.style.display).to.not.equal('none');
+                        done();
                     });
                 });
 
