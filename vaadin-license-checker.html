@@ -294,7 +294,7 @@
 
             _showLicenseDialog: function(type, expiryEpoch) {
                 if (!this.licenseDialog) {
-                    this.licenseDialog = new LicenseDialog();
+                    this.licenseDialog = document.createElement('vaadin-license-dialog');
                 }
                 Polymer.dom(document.body).appendChild(this.licenseDialog);
                 this.hideLicenseDialogReference = this._licenseDialogClosed.bind(this);

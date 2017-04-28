@@ -32,88 +32,53 @@
                 }
             });
 
-            test(
-                'checker shows unlicensed dialog on load when license is missing',
-                function(done) {
-                    flush(function() {
-                        expect(document.querySelector(
-                            'vaadin-license-dialog'
-                        )).to.exist;
-                        expect(document.querySelector(
-                            'vaadin-license-dialog #licenseDialogHeader span'
-                        ).textContent).to.equal(
-                            'Unlicensed copy of Some Product'
-                        );
-                        done();
-                    });
+            test('checker shows unlicensed dialog on load when license is missing', function(done) {
+                flush(function() {
+                    expect(document.querySelector('vaadin-license-dialog')).to.exist;
+                    expect(document.querySelector('vaadin-license-dialog').$.licenseDialogHeader.querySelector('span').textContent).to.equal('Unlicensed copy of Some Product');
+                    done();
                 });
+            });
 
             test('dialog minimizes to a box when clicking x', function(
                 done) {
                 flush(function() {
-                    document.querySelector(
-                        '#licenseDialogClose').click();
+                    var dialog = document.querySelector('vaadin-license-dialog');
+                    dialog.$.licenseDialogClose.click();
                     flush(function() {
-                        var licenseBox = document.querySelector(
-                            'vaadin-license-box'
-                        );
+                        var licenseBox = document.querySelector('vaadin-license-box');
 
-                        expect(document.querySelector(
-                            'vaadin-license-dialog'
-                        )).to.not.exist;
+                        expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
 
-                        expect(document.querySelector(
-                            'vaadin-license-box #licenseBoxContent'
-                        ).textContent).to.equal(
-                            'Unlicensed copy of Some Product'
-                        );
+                        expect(document.querySelector('vaadin-license-box').$.licenseBoxContent.textContent).to.equal('Unlicensed copy of Some Product');
 
                         var licenseBoxCheck = function() {
                             expect(licenseBox.style.display).to.not.equal('none');
                             done();
                         };
 
-                        // Check if licenseBox still animating
-                        if (licenseBox.style.display === 'none') {
-                            licenseBox.addEventListener('iron-overlay-opened', licenseBoxCheck);
-                        } else {
-                            licenseBoxCheck();
-                        }
+                        licenseBoxCheck();
                     });
                 });
             });
 
             test('box shows dialog when clicked', function(done) {
                 flush(function() {
-                    document.querySelector(
-                        '#licenseDialogClose').click();
-                    document.querySelector(
-                        '#licenseBoxContent').click();
+                    var dialog = document.querySelector('vaadin-license-dialog');
+                    dialog.$.licenseDialogClose.click();
+                    document.querySelector('vaadin-license-box').$.licenseBoxContent.click();
                     flush(function() {
-                        var licenseDialog = document.querySelector(
-                              'vaadin-license-dialog'
-                        );
+                        var licenseDialog = document.querySelector('vaadin-license-dialog');
 
-                        expect(document.querySelector(
-                                'vaadin-license-box'
-                            )).to.not.exist;
-                        expect(document.querySelector(
-                            'vaadin-license-dialog #licenseDialogHeader span'
-                        ).textContent).to.equal(
-                            'Unlicensed copy of Some Product'
-                        );
+                        expect(document.querySelector('vaadin-license-box')).to.not.exist;
+                        expect(licenseDialog.$.licenseDialogHeader.querySelector('span').textContent).to.equal('Unlicensed copy of Some Product');
 
                         var licenseDialogCheck = function() {
                             expect(licenseDialog.style.display).to.not.equal('none');
                             done();
                         };
 
-                        // Check if licenseDialog still animating
-                        if (licenseDialog.style.display === 'none') {
-                            licenseDialog.addEventListener('iron-overlay-opened', licenseDialogCheck);
-                        } else {
-                            licenseDialogCheck();
-                        }
+                        licenseDialogCheck();
                     });
                 });
             });

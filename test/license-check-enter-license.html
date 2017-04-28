@@ -36,43 +36,32 @@
                 }
             });
 
-            test('checker shows success notification on valid license and notification hides on click',
-                function(done) {
-                    checker.addEventListener('license-check-done',
-                        function() {
-                            flush(function() {
-                                expect(document.querySelector(
-                                    'vaadin-license-box'
-                                )).to.not.exist;
-                                expect(document.querySelector(
-                                    'vaadin-license-dialog'
-                                )).to.not.exist;
+            test('checker shows success notification on valid license and notification hides on click',function(done) {
+                checker.addEventListener('license-check-done',
+                    function() {
+                        flush(function() {
+                            expect(document.querySelector('vaadin-license-box')).to.not.exist;
+                            expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
 
-                                expect(document.querySelector(
-                                    'vaadin-license-notification'
-                                )).to.exist;
-                                document.querySelector(
-                                    'vaadin-license-notification'
-                                ).click();
-                                expect(document.querySelector(
-                                    'vaadin-license-notification'
-                                )).to.not.exist;
-                                done();
-                            });
+                            var licenseNotification = checker.shadowRoot.querySelector('vaadin-license-notification');
+
+                            expect(licenseNotification).to.exist;
+                            licenseNotification.click();
+                            licenseNotification = checker.shadowRoot.querySelector('vaadin-license-notification');
+                            expect(licenseNotification).to.not.exist;
+                            done();
                         });
-
-                    document.body.appendChild(checker);
-
-                    flush(function() {
-                        document.querySelector(
-                                'vaadin-license-dialog #licenseDialogInput'
-                            ).value =
-                            '12345678-1234-abcd-1234-12345678abcd';
-                        document.querySelector(
-                            'vaadin-license-dialog button'
-                        ).click();
                     });
+
+                document.body.appendChild(checker);
+
+                flush(function() {
+                    var dialog = document.querySelector('vaadin-license-dialog');
+
+                    dialog.$.licenseDialogInput.value = '12345678-1234-abcd-1234-12345678abcd';
+                    dialog.$.licenseDialogButton.click();
                 });
+            });
 
             test(
                 "checker doesn't show anything when valid license in local storage",

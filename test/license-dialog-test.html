@@ -14,75 +14,51 @@
 
 <body>
 
-    <vaadin-license-dialog product-caption="Some Product" product-name="some-product"
-    type="trial"></vaadin-license-dialog>
+    <vaadin-license-dialog id="dialog" product-caption="Some Product" product-name="some-product" type="trial"></vaadin-license-dialog>
 
     <script>
         suite('<vaadin-license-dialog>', function() {
 
-            test('shows dates when expiry is less than 30 days away',
-                function() {
-                    var dialog = document.querySelector(
-                        'vaadin-license-dialog');
-                    var dateNow = new Date();
-                    dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() +
-                        10);
+            test('shows dates when expiry is less than 30 days away', function() {
+                var dialog = document.querySelector('#dialog');
+                var dateNow = new Date();
+                dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() + 10);
 
-                    expect(dialog.content).to.have.string(
-                        'You are currently using Some Product with a trial license, which will expire in 10 days.'
-                    );
+                expect(dialog.content).to.have.string('You are currently using Some Product with a trial license, which will expire in 10 days.');
+            });
+
+            test('shows hours when expiry is less than 24 hours away', function() {
+                var dialog = document.querySelector('#dialog');
+                var dateNow = new Date();
+                dialog.expiryEpoch = dateNow.setHours(dateNow.getHours() + 10);
+
+                expect(dialog.content).to.have.string('You are currently using Some Product with a trial license, which will expire in 10 hours.');
+            });
+
+            test('shows expiry date when expiry is more than 30 days away', function() {
+                var dialog = document.querySelector('#dialog');
+                var dateNow = new Date();
+                dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() + 40);
+
+                var padDate = function(date) {
+                    if (date.toString().length === 1) {
+                        return '0' + date;
+                    } else {
+                        return date;
+                    }
+                };
+                var expectedDateString = dateNow.getFullYear() + '-' + padDate(dateNow.getMonth()) + '-' +  padDate(dateNow.getDate());
+
+                expect(dialog.content).to.have.string('You are currently using Some Product with a trial license, which will expire on ' + expectedDateString);
+            });
+
+            test('submit on enter press', function(done) {
+                var dialog = document.querySelector('#dialog');
+                dialog.addEventListener('vaadin-license-dialog-submit', function() {
+                    done();
                 });
-
-            test('shows hours when expiry is less than 24 hours away',
-                function() {
-                    var dialog = document.querySelector(
-                        'vaadin-license-dialog');
-                    var dateNow = new Date();
-                    dialog.expiryEpoch = dateNow.setHours(dateNow.getHours() +
-                        10);
-
-                    expect(dialog.content).to.have.string(
-                        'You are currently using Some Product with a trial license, which will expire in 10 hours.'
-                    );
-                });
-
-            test(
-                'shows expiry date when expiry is more than 30 days away',
-                function() {
-                    var dialog = document.querySelector(
-                        'vaadin-license-dialog');
-                    var dateNow = new Date();
-                    dialog.expiryEpoch = dateNow.setDate(dateNow.getDate() +
-                        40);
-
-                    var padDate = function(date) {
-                        if (date.toString().length === 1) {
-                            return '0' + date;
-                        } else {
-                            return date;
-                        }
-                    };
-                    var expectedDateString = dateNow.getFullYear() +
-                        '-' + padDate(dateNow.getMonth()) + '-' +
-                        padDate(dateNow.getDate());
-
-                    expect(dialog.content).to.have.string(
-                        'You are currently using Some Product with a trial license, which will expire on ' +
-                        expectedDateString);
-                });
-
-            test(
-                  'submit on enter press',
-                  function(done) {
-                      var dialog = document.querySelector(
-                          'vaadin-license-dialog');
-
-                      dialog.addEventListener('vaadin-license-dialog-submit', function() {
-                          done();
-                      });
-
-                      MockInteractions.pressEnter(dialog.querySelector('#licenseDialogInput'));
-                });
+                MockInteractions.pressEnter(dialog.$.licenseDialogInput);
+            });
         });
     </script>
 
