@@ -1,6 +1,6 @@
 {
   "name": "vaadin-license-checker",
-  "version": "1.0.0-beta1",
+  "version": "1.0.0",
   "repository": "vaadin/license-checker",
   "license": "Apache-2.0",
   "scripts": {
