@@ -32,57 +32,13 @@
                 }
             });
 
-            test('checker shows unlicensed dialog on load when license is missing', function(done) {
+            test('checker shows no dialog or box the first time a product is used', function(done) {
                 flush(function() {
-                    expect(document.querySelector('vaadin-license-dialog')).to.exist;
-                    expect(document.querySelector('vaadin-license-dialog').$.licenseDialogHeader.querySelector('span').textContent).to.equal('Unlicensed copy of Some Product');
+                    expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
+                    expect(document.querySelector('vaadin-license-box')).to.not.exist;
                     done();
                 });
             });
-
-            test('dialog minimizes to a box when clicking x', function(
-                done) {
-                flush(function() {
-                    var dialog = document.querySelector('vaadin-license-dialog');
-                    dialog.$.licenseDialogClose.click();
-                    flush(function() {
-                        var licenseBox = document.querySelector('vaadin-license-box');
-
-                        expect(document.querySelector('vaadin-license-dialog')).to.not.exist;
-
-                        expect(document.querySelector('vaadin-license-box').$.licenseBoxContent.textContent).to.equal('Unlicensed copy of Some Product');
-
-                        var licenseBoxCheck = function() {
-                            expect(licenseBox.style.display).to.not.equal('none');
-                            done();
-                        };
-
-                        licenseBoxCheck();
-                    });
-                });
-            });
-
-            test('box shows dialog when clicked', function(done) {
-                flush(function() {
-                    var dialog = document.querySelector('vaadin-license-dialog');
-                    dialog.$.licenseDialogClose.click();
-                    document.querySelector('vaadin-license-box').$.licenseBoxContent.click();
-                    flush(function() {
-                        var licenseDialog = document.querySelector('vaadin-license-dialog');
-
-                        expect(document.querySelector('vaadin-license-box')).to.not.exist;
-                        expect(licenseDialog.$.licenseDialogHeader.querySelector('span').textContent).to.equal('Unlicensed copy of Some Product');
-
-                        var licenseDialogCheck = function() {
-                            expect(licenseDialog.style.display).to.not.equal('none');
-                            done();
-                        };
-
-                        licenseDialogCheck();
-                    });
-                });
-            });
-
 
         });
     </script>
