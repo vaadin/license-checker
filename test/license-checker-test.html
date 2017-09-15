@@ -13,14 +13,22 @@
 
 <body>
 
-    <vaadin-license-checker product-name="foobar"></vaadin-license-checker>
-    <vaadin-license-checker product-name="foobar"></vaadin-license-checker>
 
     <script>
         suite('<vaadin-license-checker>', function() {
 
             setup(function() {
                 window.localStorage.clear();
+                window.localStorage.setItem(
+                  'vaadin.foobar.license.nextcheck',
+                  new Date().getTime()
+                );
+                var checker1 = new LicenseChecker();
+                var checker2 = new LicenseChecker();
+                checker1.productName = 'foobar';
+                checker2.productName = 'foobar';
+                document.body.appendChild(checker1);
+                document.body.appendChild(checker2);
             });
 
             test(

@@ -20,6 +20,10 @@
 
             setup(function() {
                 window.localStorage.clear();
+                window.localStorage.setItem(
+                  'vaadin.some-product.license.nextcheck',
+                  new Date().getTime()
+                );
                 checker = new LicenseChecker();
                 checker.productName = 'some-product';
                 checker.productCaption = 'Some Product';

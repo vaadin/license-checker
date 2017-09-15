@@ -31,6 +31,10 @@
           'vaadin.some-product.license.check.time',
           new Date().getTime()
         );
+        window.localStorage.setItem(
+          'vaadin.some-product.license.nextcheck',
+          new Date().getTime()
+        );
 
         if (setLicense) {
           window.localStorage.setItem(
