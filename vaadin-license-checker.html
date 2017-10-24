@@ -136,6 +136,16 @@ const sendData = function(url, data, onsuccess, onerror) {
 window.Vaadin.developmentModeCallback = window.Vaadin.developmentModeCallback || {};
 window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function(cls) {
   var productInfo = {name: cls.is, version: cls.version};
+
+  // Defer first check until interval has expired to avoid interfering with tests etc
+  const lastCheck = Number(localStorage.getItem(getLastCheckKey(productInfo)));
+  if (!lastCheck) {
+    const now = new Date().getTime();
+    debug("Deferring first check until " + new Date(now + checkInterval));
+    localStorage.setItem(getLastCheckKey(productInfo), now);
+    return;
+  }
+
   window.addEventListener("message", function(e) {
     if (e.data == "validate-license") {
       checkLicenseKey(productInfo);
