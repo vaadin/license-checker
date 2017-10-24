@@ -15,7 +15,8 @@
   "dependencies": {
     "iron-ajax": "PolymerElements/iron-ajax#^2.0.0",
     "iron-localstorage": "PolymerElements/iron-localstorage#^2.0.0",
-    "polymer": "^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "vaadin-development-mode-detector": "vaadin/vaadin-development-mode-detector#master"
   },
   "devDependencies": {
     "iron-input": "PolymerElements/iron-input#^2.0.0",

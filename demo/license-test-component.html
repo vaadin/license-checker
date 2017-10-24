@@ -1,25 +1,31 @@
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-input/iron-input.html">
-<link rel="import" href="../vaadin-license-checker.html">
+<link rel="import" href="../../vaadin-development-mode-detector/vaadin-development-mode-detector.html">
 
 <dom-module id="license-test-component">
     <template>
         <input is="iron-input" type="text" bind-value="{{inputValue}}">
-        <!--<vaadin-license-checker license-key="{{inputValue}}" product-name="vaadin-charts"
-        product-version="3" product-caption="Vaadin Charts">
-        </vaadin-license-checker>-->
-        <vaadin-license-checker license-key="{{inputValue}}" license-url-base="../test-license/"
-        product-name="some-product" product-version="2" product-caption="Vaadin Some Product">
-        </vaadin-license-checker>
     </template>
 </dom-module>
 
 <script>
-    Polymer({
-        is: "license-test-component",
+class LicenseTestElement extends Polymer.Element {
+  static get is() {
+    return 'license-test-component';
+  }
+  static get version() {
+    return '1.2.3';
+  }
+  static get properties() {
+    return {
+      inputValue: {
+        type: String
+      }
+    };
+  }
+}
 
-        properties: {
-            inputValue: String
-        }
-    });
+customElements.define(LicenseTestElement.is, LicenseTestElement);
+
+Vaadin.runIfDevelopmentMode('vaadin-license-checker', LicenseTestElement);
 </script>
