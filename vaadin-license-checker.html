@@ -75,17 +75,6 @@ const hideValidationNotification = function(productInfo) {
 const checkLicenseKey = function(productInfo) {
   var showOkOnSuccess = getValidationNotification(productInfo);
   debug("checkLicenseKey(" + JSON.stringify(productInfo)+")");
-  const lastCheck = Number(localStorage.getItem(getLastCheckKey(productInfo)));
-  if (lastCheck) {
-    const sinceLastCheck = now-lastCheck;
-    const nextCheck = lastCheck+checkInterval-now;
-    debug("Last check " + Math.round(sinceLastCheck/1000) + "s ago at " + new Date(lastCheck));
-    if (nextCheck > 0) {
-      // Checked recently
-      debug("Next check in " + Math.round(nextCheck/1000) + "s at " + new Date(lastCheck + checkInterval));
-      return;
-    }
-  }
 
   const payload = {
     "product-name": productInfo.name,
@@ -144,6 +133,15 @@ window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function(cls) 
     debug("Deferring first check until " + new Date(now + checkInterval));
     localStorage.setItem(getLastCheckKey(productInfo), now);
     return;
+  } else {
+    const sinceLastCheck = now-lastCheck;
+    const nextCheck = lastCheck+checkInterval-now;
+    debug("Last check " + Math.round(sinceLastCheck/1000) + "s ago at " + new Date(lastCheck));
+    if (nextCheck > 0) {
+      // Checked recently
+      debug("Next check in " + Math.round(nextCheck/1000) + "s at " + new Date(lastCheck + checkInterval));
+      return;
+    }
   }
 
   window.addEventListener("message", function(e) {
