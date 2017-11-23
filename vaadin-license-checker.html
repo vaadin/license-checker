@@ -81,7 +81,8 @@ const checkLicenseKey = function(productInfo) {
     "product-version": productInfo.version
   };
   const onerror = function() {
-    showValidationNotification(productInfo);
+    // Offline or blocked, just log to console and let people get work done
+    console.error("Unable to validate the license for " + productInfo.name + ". Check your internet access.");
   };
   const onresponse = function(responseText) {
     const response = JSON.parse(responseText);
