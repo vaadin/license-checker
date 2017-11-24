@@ -141,10 +141,18 @@ const sendData = function(url, data, onsuccess, onerror) {
   req.send(JSON.stringify(data));
 };
 
+var proProducts = [];
+window.Vaadin.pro = window.Vaadin.pro || {};
+window.Vaadin.pro.checkLicenses = function() {
+  // Force checking of all licenses to avoid e.g. popups during presentations when the grace period just has ended
+  proProducts.forEach(productInfo => {
+    checkLicenseKey(productInfo);
+  });
+}
 window.Vaadin.developmentModeCallback = window.Vaadin.developmentModeCallback || {};
 window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function(cls) {
   var productInfo = {name: cls.is, version: cls.version};
-
+  proProducts.push(productInfo);
   // Defer first check until interval has expired to avoid interfering with tests etc
   const lastCheck = Number(localStorage.getItem(getLastCheckKey(productInfo)));
   if (!lastCheck) {
