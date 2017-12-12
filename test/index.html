@@ -15,12 +15,8 @@
             'license-box-test.html',
             'license-check-24-hour-storage.html',
             'license-checker-test.html',
-            'license-check-enter-license.html',
-            'license-check-expired-license.html',
             'license-check-no-license.html',
-            'license-check-no-license-24-hours-passed.html',
-            'license-check-trial-license.html',
-            'license-dialog-test.html'
+            'license-check-no-license-24-hours-passed.html'
         ].reduce((suites, suite) => {
             return suites.concat([suite, suite + '?wc-shadydom=true'])
         }, []));
