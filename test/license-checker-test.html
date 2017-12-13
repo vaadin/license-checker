@@ -15,13 +15,52 @@
 
 
     <script>
-        suite('<vaadin-license-checker>', function() {
+        suite('first-use', function () {
+            setup(() => {
+                localStorage.clear();
+            });
+            test('first-use-set-properly', function () {
+                const stats = new UsageStatistics();
+                stats.maybeSend();
+                const firstUse = Number(localStorage.getItem(UsageStatistics.firstUseKey));
+                const now = new Date().getTime();
 
-            setup(function() {
+                // firstUse should be set to approximately "now"
+                assert.closeTo(firstUse, now, 2000);
+            });
+            test('nothing-sent-during-initial-delay', function () {
+                const stats = new SendLoggingUsageStatistics();
+                stats.maybeSend();
+                assert.equal(stats.sendCalled, 0);
+            });
+            test('stats-gathered-during-initial-delay', function () {
+                const stats = new UsageStatistics();
+                stats.gatherer = new LoggingGatherer();
+                stats.maybeGatherAndSend();
+                assert.isAtLeast(stats.gatherer.gatherCalled, 1);
+            });
+            test('might-send-after-initial-delay', function () {
+                var lotteryCalled = false;
+                class MockUsageStatistics extends UsageStatistics {
+                    lottery() {
+                        lotteryCalled = true;
+                    }
+                }
+                const stats = new MockUsageStatistics();
+                const firstUse = new Date().getTime() - stats.initialDelay * 1000 - 1;
+                localStorage.setItem(UsageStatistics.firstUseKey, firstUse);
+                stats.maybeSend();
+                assert.isTrue(lotteryCalled);
+            });
+        });
+
+        suite('<vaadin-license-checker>', function () {
+
+            setup(function () {
                 window.localStorage.clear();
                 window.localStorage.setItem(
-                  'vaadin.foobar.license.nextcheck',
-                  new Date().getTime()
+                    'vaadin.foobar.license.nextcheck',
+                    new Date().getTime()
                 );
                 var checker1 = new LicenseChecker();
                 var checker2 = new LicenseChecker();
@@ -33,7 +72,7 @@
 
             test(
                 'shows only one box when multiple checkers for the same product exist in the DOM',
-                function() {
+                function () {
                     expect(document.querySelector(
                         'vaadin-license-dialog')).to.exist;
                     expect(document.querySelectorAll(
@@ -43,7 +82,7 @@
 
             test(
                 'validates both missing and set version numbers',
-                function() {
+                function () {
                     var licenseChecker = new LicenseChecker();
                     licenseChecker.productName = "some-product";
                     expect(licenseChecker._isValidLicense(
@@ -54,7 +93,7 @@
                 });
             test(
                 'validate that version number can be set as string',
-                function() {
+                function () {
                     var licenseChecker = new LicenseChecker();
                     licenseChecker.productVersion = "2";
                     licenseChecker.productName = "some-product";

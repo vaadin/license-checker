@@ -3,180 +3,241 @@
 <!-- Validates Vaadin Subscription licenses -->
 
 <script>
-{
-  const isDebug = function() {
-    return localStorage.getItem("vaadin.licenses.debug");
-  }
-  const debug = function(msg) {
-    if (isDebug()) {
-      console.log("vaadin-license-checker: "+msg);
+  class LicenseCheckerLogger {
+    constructor() {
+      this.id = "vaadin-license-checker";
     }
-  };
-  const getForcedResponse = function() {
-    return localStorage.getItem("vaadin.licenses.forcedResponse");
-  }
-  const isForceError = function() {
-    return localStorage.getItem("vaadin.licenses.forceError");
-  }
 
-
-  const checkInterval = isDebug() ? 1000*10 : 1000*60*60*24;
-  const now = new Date().getTime();
-  const lastCheckKey = "vaadin.licenses.{product}.lastCheck";
-
-  const url = "https://tools.vaadin.com/vaadin-license-server/licenses/pro";
-
-
-  const getLastCheckKey = function(productInfo) {
-    return lastCheckKey.replace("{product}", productInfo.name);
-  }
-
-  const getValidationNotificationId = function(productInfo) {
-    return "vaadin-license-validation-notification-" + productInfo.name;
-  }
-
-  const getValidationNotification = function(productInfo) {
-    return document.getElementById(getValidationNotificationId(productInfo));
-  }
-
-  const getOkNotification = function() {
-    return document.getElementById("vaadin-license-validation-ok");
-  }
-
-  const showOk = function(productInfo) {
-    // Only show one ok box even if multiple licenses were checked
-    var okNotification = getOkNotification();
-    if (okNotification) {
-      // Already shown
-      return;
+    isDebug() {
+      return localStorage.getItem("vaadin.licenses.debug");
     }
-    okNotification = document.createElement("vaadin-license-box");
-    okNotification.id = "vaadin-license-validation-ok";
-    okNotification.type = "ok";
-    okNotification.content = "Your license has been validated";
-    document.body.appendChild(okNotification);
-    okNotification.addEventListener("click", function() {
-      okNotification.remove();
-    });
+
+    debug(msg) {
+      if (this.isDebug()) {
+        console.info(this.id + ": " + msg);
+      }
+    }
   }
-  const showValidationNotification = function(productInfo) {
-    debug("showValidationNotification(" + JSON.stringify(productInfo) + ")");
-    var validationNotification = getValidationNotification(productInfo);
-    if (!validationNotification) {
-      validationNotification = document.createElement("vaadin-license-box");
-      validationNotification.id = getValidationNotificationId(productInfo);
-      validationNotification.type = "needsvalidation";
-      validationNotification.content = "Click to validate your Vaadin Subscription";
-      document.body.appendChild(validationNotification);
-      validationNotification.addEventListener("click", function() {
-        window.open("https://vaadin.com/pro/validate-license","_blank");
-      });
+  class LicenseCheckerStorage {
+    constructor() {
+      this.logger = new LicenseCheckerLogger();
     }
-  };
-
-  const hideValidationNotification = function(productInfo) {
-    var validationNotification = getValidationNotification(productInfo);
-    if (validationNotification) {
-      validationNotification.remove();
+    getLastCheckKey(productInfo) {
+      return "vaadin.licenses.{product}.lastCheck".replace("{product}", productInfo.name);
     }
-  };
 
-  const checkLicenseKey = function(productInfo) {
-    var showOkOnSuccess = getValidationNotification(productInfo);
-    debug("checkLicenseKey(" + JSON.stringify(productInfo)+")");
+    getLastCheck(productInfo) {
+      return Number(localStorage.getItem(this.getLastCheckKey(productInfo)));
+    }
 
-    const payload = {
-      "product-name": productInfo.name,
-      "product-version": productInfo.version
-    };
-    const onerror = function() {
-      // Offline or blocked, just log to console and let people get work done
-      console.error("Unable to validate the license for " + productInfo.name + ". Check your internet access.");
-    };
-    const onresponse = function(responseText) {
-      const response = JSON.parse(responseText);
-      if (response.result == "ok") {
-        // Everything is fine, stop
-        debug("License check ok for " + JSON.stringify(productInfo));
-        localStorage.setItem(getLastCheckKey(productInfo), new Date().getTime());
-        if (showOkOnSuccess) {
-          showOk(productInfo);
+    setLastCheck(productInfo, timestamp) {
+      this.logger.debug("Setting last check time to "+new Date(timestamp));
+      localStorage.setItem(this.getLastCheckKey(productInfo), timestamp);
+    }
+  }
+
+  class LicenseChecker {
+    constructor() {
+      this.okNotifier = new LicenseOkNotifier();
+      this.validationNeededNotifier = new LicenseValidationNeededNotifier();
+      this.storage = new LicenseCheckerStorage();
+      this.checkInterval = 1000 * 60 * 60 * 24;
+      this.logger = new LicenseCheckerLogger();
+      this.url = "https://tools.vaadin.com/vaadin-license-server/licenses/pro";
+    }
+
+    static get version() {
+      return '2.0.0';
+    }
+    getForcedResponseKey(productInfo) {
+      return 'vaadin.licenses.{product}.forcedResponse'.replace('{product}',productInfo.name);
+    }
+
+
+    getForcedResponse(productInfo) {
+      return localStorage.getItem(this.getForcedResponseKey(productInfo));
+    }
+    clearForcedResponse(productInfo) {
+      return localStorage.removeItem(this.getForcedResponseKey(productInfo));      
+    }
+
+    maybeCheck(productInfo) {
+      this.logger.debug("maybeCheck(" + JSON.stringify(productInfo) + ")");
+      // Defer first check until interval has expired to avoid interfering with tests etc
+      const now = new Date().getTime();
+      const lastCheck = this.storage.getLastCheck(productInfo);
+      if (!lastCheck) {
+        this.logger.debug("Deferring first check until " + new Date(now + this.checkInterval));
+        this.storage.setLastCheck(productInfo, now);
+        return;
+      } else {
+        const sinceLastCheck = Math.round((now - lastCheck) / 1000);
+        const nextCheck = Math.round(this.checkInterval / 1000 - sinceLastCheck);
+        if (nextCheck > 0) {
+          // Checked recently
+          const nextCheckDate = new Date(lastCheck + this.checkInterval);
+          this.logger.debug("Checked " + sinceLastCheck + "s ago. Next check in " + nextCheck + "s at " + nextCheckDate + ".");
+          return;
+        } else {
+          this.logger.debug("Last check was " + sinceLastCheck + "s ago.");
+        }
+      }
+      this.check(productInfo);
+    }
+
+    check(productInfo) {
+      this.logger.debug("check(" + JSON.stringify(productInfo) + ")");
+
+      // Only show an ok notification if the "validation needed" notification was shown.
+      // For background checks, show no visual notification if all goes well
+      var showOkOnSuccess = this.validationNeededNotifier.isVisible(productInfo);
+
+      const payload = {
+        "product-name": productInfo.name,
+        "product-version": productInfo.version
+      };
+      const checker = this;
+      const onerror = function () {
+        // Offline or blocked, just log to console and let people get work done
+        console.error("Unable to validate the license for " + productInfo.name + ". Check your internet access.");
+      };
+      const onresponse = function (responseText) {
+        const response = JSON.parse(responseText);
+        if (response.result == "ok") {
+          // Everything is fine, stop
+          checker.logger.debug("License check ok for " + JSON.stringify(productInfo));
+          checker.storage.setLastCheck(productInfo, new Date().getTime());
+          if (showOkOnSuccess) {
+            checker.logger.debug("Showing validation-ok dialog");
+            checker.okNotifier.show(productInfo);
+          }
+        } else {
+          checker.logger.debug("License check failed for " + JSON.stringify(productInfo));
+          checker.logger.debug("Showing validation-needed dialog");
+          checker.validationNeededNotifier.show(productInfo);
+        }
+        if (response.message) {
+          console.log(response.message);
+        }
+      };
+
+      // This is typically hidden already but when receiving a window message it is not
+      this.logger.debug("Ensuring validation-needed dialog is hidden");
+      this.validationNeededNotifier.hide(productInfo);
+
+      if (this.logger.isDebug() && this.getForcedResponse(productInfo)) {
+        const resp = this.getForcedResponse(productInfo);
+        this.clearForcedResponse(productInfo);
+        if (resp.type == "error") {
+          this.logger.debug("Forced error for check");
+          onerror();
+        } else {
+          this.logger.debug("Forced response for check: " + JSON.stringify(resp));
+          onresponse(resp);
         }
       } else {
-        debug("License check failed for " + JSON.stringify(productInfo));
-        showValidationNotification(productInfo);
+        this.send(this.url, payload, onresponse, onerror);
       }
-      if (response.message) {
-        console.log(response.message);
-      }
-    };
-
-    // This is typically hidden already but when receiving a window message it is not
-    hideValidationNotification(productInfo);
-
-    if (isDebug() && getForcedResponse()) {
-      debug("Forced response for check");
-      onresponse(getForcedResponse());
-    } else if (isDebug() && isForceError()) {
-      debug("Forced error for check");
-      onerror();
-    } else {
-      sendData(url, payload, onresponse, onerror);
     }
-  };
-
-  const sendData = function(url, data, onsuccess, onerror) {
-    debug("Sending request to " + url);
-    var req = new XMLHttpRequest();
-    req.withCredentials = true;
-    req.addEventListener("readystatechange", function() {
-      if(req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-        onsuccess(req.responseText);
-      }
-    });
-    req.addEventListener("error", function() {
-      onerror();
-    });
-    req.open("GET", url);
-    req.send(JSON.stringify(data));
-  };
-
-  var proProducts = [];
-  window.Vaadin = window.Vaadin || {};
-  window.Vaadin.developmentModeCallback = window.Vaadin.developmentModeCallback || {};
-  window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function(cls) {
-    var productInfo = {name: cls.is, version: cls.version};
-    proProducts.push(productInfo);
-    // Defer first check until interval has expired to avoid interfering with tests etc
-    const lastCheck = Number(localStorage.getItem(getLastCheckKey(productInfo)));
-    if (!lastCheck) {
-      const now = new Date().getTime();
-      debug("Deferring first check until " + new Date(now + checkInterval));
-      localStorage.setItem(getLastCheckKey(productInfo), now);
-      return;
-    } else {
-      const sinceLastCheck = now-lastCheck;
-      const nextCheck = lastCheck+checkInterval-now;
-      debug("Last check " + Math.round(sinceLastCheck/1000) + "s ago at " + new Date(lastCheck));
-      if (nextCheck > 0) {
-        // Checked recently
-        debug("Next check in " + Math.round(nextCheck/1000) + "s at " + new Date(lastCheck + checkInterval));
+    send(url, data, onsuccess, onerror) {
+      this.logger.debug("Sending request to " + url);
+      var req = new XMLHttpRequest();
+      req.withCredentials = true;
+      req.addEventListener("readystatechange", function () {
+        if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+          onsuccess(req.responseText);
+        }
+      });
+      req.addEventListener("error", function () {
+        onerror();
+      });
+      req.open("GET", url);
+      req.send(JSON.stringify(data));
+    };
+  }
+  class LicenseOkNotifier {
+    static get id() {
+      return 'vaadin-license-validation-ok';
+    }
+    getInstance() {
+      return document.getElementById(this.id);
+    }
+    show(productInfo) {
+      // Only show one ok box even if multiple licenses were checked
+      if (this.getInstance()) {
+        // Already shown
         return;
       }
-    }
-    window.Vaadin.checkLicenses = function() {
-      // Force checking of all licenses to avoid e.g. popups during presentations when the grace period just has ended
-      proProducts.forEach(productInfo => {
-        checkLicenseKey(productInfo);
+      const instance = document.createElement("vaadin-license-box");
+      instance.id = this.id;
+      instance.type = "ok";
+      instance.content = "Your license has been validated";
+      document.body.appendChild(instance);
+      instance.addEventListener("click", function () {
+        instance.remove();
       });
     }
+  }
+  class LicenseValidationNeededNotifier {
+    id(productInfo) {
+      return "vaadin-license-validation-notification-{product}".replace("{product}", productInfo.name);
+    }
+    getInstance(productInfo) {
+      return document.getElementById(this.id(productInfo));
+    }
+    show(productInfo) {
+      if (this.getInstance(productInfo)) {
+        // Already shown
+        return;
+      }
+      const instance = document.createElement("vaadin-license-box");
+      instance.id = this.id(productInfo);
+      instance.type = "needsvalidation";
+      instance.content = "Click to validate your Vaadin Subscription";
+      document.body.appendChild(instance);
+      instance.addEventListener("click", function () {
+        window.open("https://vaadin.com/pro/validate-license", "_blank");
+      });
+    }
+    hide(productInfo) {
+      const instance = this.getInstance(productInfo);
+      if (instance) {
+        instance.remove();
 
-    window.addEventListener("message", function(e) {
+      }
+    }
+    isVisible(productInfo) {
+      return !!this.getInstance(productInfo);
+    }
+  }
+
+
+
+
+
+
+  const proProducts = [];
+  const checker = new LicenseChecker();
+
+  window.Vaadin = window.Vaadin || {};
+  window.Vaadin.developmentModeCallback = window.Vaadin.developmentModeCallback || {};
+  window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function (cls) {
+    var productInfo = { name: cls.is, version: cls.version };
+    proProducts.push(productInfo);
+    window.addEventListener("message", function (e) {
       if (e.data == "validate-license") {
-        checkLicenseKey(productInfo);
+        checker.check(productInfo);
       }
     }, false);
-    checkLicenseKey(productInfo);
+
+    checker.maybeCheck(productInfo);
   };
-}
+  window.Vaadin.checkLicenses = function () {
+    // Force checking of all licenses to avoid e.g. popups during presentations when the grace period just has ended
+    proProducts.forEach(productInfo => {
+      checker.check(productInfo);
+    });
+  }
+
+
 </script>
