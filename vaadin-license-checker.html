@@ -174,7 +174,7 @@
       instance.content = "Your license has been validated";
       document.body.appendChild(instance);
       instance.addEventListener("click", function () {
-        instance.remove();
+        instance.parentElement.removeChild(instance);
       });
     }
   }
@@ -202,8 +202,7 @@
     hide(productInfo) {
       const instance = this.getInstance(productInfo);
       if (instance) {
-        instance.remove();
-
+        instance.parentElement.removeChild(instance);
       }
     }
     isVisible(productInfo) {

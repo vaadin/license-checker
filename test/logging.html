@@ -60,7 +60,6 @@
                             if (msg == testMessage) {
                                 loggedTestMessage++;
                             }
-                            oldConsoleLog(msg);
                         }
                         checker = new LoggingLicenseChecker();
                         forceResponse({ result: "ok", message: testMessage });
@@ -80,7 +79,6 @@
                             if (msg == testMessage) {
                                 loggedTestMessage++;
                             }
-                            oldConsoleLog(msg);
                         }
                         checker = new LoggingLicenseChecker();
                         forceResponse({ result: "ok", message: testMessage });
@@ -100,7 +98,7 @@
                             if (msg.indexOf(testMessage) != -1) {
                                 loggedTestMessage++;
                             } else {
-                                oldConsoleError(msg);
+                                throw msg;
                             }
                         }
                         checker = new LoggingLicenseChecker();
