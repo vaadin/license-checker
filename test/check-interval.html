@@ -14,65 +14,67 @@
 <body>
 
   <script>
-    suite('Check interval', function () {
+    HTMLImports.whenReady(() => {
+      suite('Check interval', function () {
 
-      class LoggingLicenseChecker extends LicenseChecker {
-        constructor() {
-          super();
-          this.maybeCheckCalled = 0;
-          this.checkCalled = 0;
-        }
-        maybeCheck(productInfo) {
-          this.maybeCheckCalled++;
-          super.maybeCheck(productInfo);
-        }
-        check(productInfo) {
-          this.checkCalled++;
-          super.check(productInfo);
-        }
-      }
-
-      var productInfo;
-      setup(function () {
-        window.localStorage.clear();
-        productInfo = { "name": "test-product", "version": "1.2.3" };
-      });
-
-      test('no check in first 24h', function () {
-        class TestLicenseChecker extends LicenseChecker {
+        class LoggingLicenseChecker extends LicenseChecker {
+          constructor() {
+            super();
+            this.maybeCheckCalled = 0;
+            this.checkCalled = 0;
+          }
+          maybeCheck(productInfo) {
+            this.maybeCheckCalled++;
+            super.maybeCheck(productInfo);
+          }
           check(productInfo) {
-            assert.fail(0, 0, "Check should not be called");
+            this.checkCalled++;
+            super.check(productInfo);
           }
         }
-        const checker = new TestLicenseChecker();
-        checker.maybeCheck(productInfo);
-        checker.maybeCheck(productInfo);
-        checker.maybeCheck(productInfo);
-      });
 
-      test('check after 24h of use', function () {
-        const checker = new LoggingLicenseChecker();
-        // 24h - 1s ago
-        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
-        checker.maybeCheck(productInfo);
-        assert.equal(checker.checkCalled, 0);
-        // 24h + 1s ago
-        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
-        checker.maybeCheck(productInfo);
-        assert.equal(checker.checkCalled, 1);
-      });
-      test('check every 24h', function () {
-        const checker = new LoggingLicenseChecker();
-        // 24h - 1s ago
-        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
-        checker.maybeCheck(productInfo);
-        assert.equal(checker.maybeCheckCalled, 1);
-        assert.equal(checker.checkCalled, 0);
-        // 24h + 1s ago
-        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
-        checker.maybeCheck(productInfo);
-        assert.equal(checker.maybeCheckCalled, 2);
-        assert.equal(checker.checkCalled, 1);
+        var productInfo;
+        setup(function () {
+          window.localStorage.clear();
+          productInfo = { "name": "test-product", "version": "1.2.3" };
+        });
+
+        test('no check in first 24h', function () {
+          class TestLicenseChecker extends LicenseChecker {
+            check(productInfo) {
+              assert.fail(0, 0, "Check should not be called");
+            }
+          }
+          const checker = new TestLicenseChecker();
+          checker.maybeCheck(productInfo);
+          checker.maybeCheck(productInfo);
+          checker.maybeCheck(productInfo);
+        });
+
+        test('check after 24h of use', function () {
+          const checker = new LoggingLicenseChecker();
+          // 24h - 1s ago
+          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
+          checker.maybeCheck(productInfo);
+          assert.equal(checker.checkCalled, 0);
+          // 24h + 1s ago
+          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
+          checker.maybeCheck(productInfo);
+          assert.equal(checker.checkCalled, 1);
+        });
+        test('check every 24h', function () {
+          const checker = new LoggingLicenseChecker();
+          // 24h - 1s ago
+          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
+          checker.maybeCheck(productInfo);
+          assert.equal(checker.maybeCheckCalled, 1);
+          assert.equal(checker.checkCalled, 0);
+          // 24h + 1s ago
+          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
+          checker.maybeCheck(productInfo);
+          assert.equal(checker.maybeCheckCalled, 2);
+          assert.equal(checker.checkCalled, 1);
+        });
       });
     });
   </script>

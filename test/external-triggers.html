@@ -14,60 +14,61 @@
 <body>
 
     <script>
-        suite('External triggers', function () {
+        HTMLImports.whenReady(() => {
+            suite('External triggers', function () {
 
-            class LoggingLicenseChecker extends LicenseChecker {
-                constructor() {
-                    super();
-                    this.maybeCheckCalled = {};
-                    this.checkCalled = {};
+                class LoggingLicenseChecker extends LicenseChecker {
+                    constructor() {
+                        super();
+                        this.maybeCheckCalled = {};
+                        this.checkCalled = {};
+                    }
+                    maybeCheck(productInfo) {
+                        const productInfoString = JSON.stringify(productInfo);
+                        this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
+                        this.maybeCheckCalled[productInfoString]++;
+                        super.maybeCheck(productInfo);
+                    }
+                    check(productInfo) {
+                        const productInfoString = JSON.stringify(productInfo);
+                        this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
+                        this.checkCalled[productInfoString]++;
+                        super.check(productInfo);
+                    }
                 }
-                maybeCheck(productInfo) {
-                    const productInfoString = JSON.stringify(productInfo);
-                    this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
-                    this.maybeCheckCalled[productInfoString]++;
-                    super.maybeCheck(productInfo);
-                }
-                check(productInfo) {
-                    const productInfoString = JSON.stringify(productInfo);
-                    this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
-                    this.checkCalled[productInfoString]++;
-                    super.check(productInfo);
-                }
-            }
 
-            var productInfo;
-            suiteSetup(function () {
-                productInfo = { "name": "test-product", "version": "1.2.3" };
-                window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "foo-foo", "version": "1.2.3" });
-                window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "bar-bar", "version": "2.2.2" });
-            });
+                var productInfo;
+                suiteSetup(function () {
+                    productInfo = { "name": "test-product", "version": "1.2.3" };
+                    window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "foo-foo", "version": "1.2.3" });
+                    window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "bar-bar", "version": "2.2.2" });
+                });
 
-            setup(function() {
-                window.localStorage.clear();
-            });
+                setup(function () {
+                    window.localStorage.clear();
+                });
 
-            test('Window postmessage triggers check for all products', function (done) {
-                window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
-                assert.equal(Object.keys(window.Vaadin.LicenseChecker.checkCalled).length, 0);
-                window.postMessage('validate-license', '*');
-                setTimeout(function () {
+                test('Window postmessage triggers check for all products', function (done) {
+                    window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
+                    assert.equal(Object.keys(window.Vaadin.LicenseChecker.checkCalled).length, 0);
+                    window.postMessage('validate-license', '*');
+                    setTimeout(function () {
+                        assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "foo-foo", "version": "1.2.3" })], 1);
+                        assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "bar-bar", "version": "2.2.2" })], 1);
+                        done();
+                    }, 1);
+                });
+
+                test('JS API triggers check for all products', function (done) {
+                    window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
+                    assert.equal(Object.keys(window.Vaadin.LicenseChecker.checkCalled).length, 0);
+                    window.Vaadin.checkLicenses();
                     assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "foo-foo", "version": "1.2.3" })], 1);
                     assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "bar-bar", "version": "2.2.2" })], 1);
                     done();
-                }, 1);
+                });
+
             });
-
-            test('JS API triggers check for all products', function (done) {
-                window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
-                assert.equal(Object.keys(window.Vaadin.LicenseChecker.checkCalled).length, 0);
-                window.Vaadin.checkLicenses();
-                assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "foo-foo", "version": "1.2.3" })], 1);
-                assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "bar-bar", "version": "2.2.2" })], 1);
-                done();
-            });
-
-
         });
     </script>
 </body>
