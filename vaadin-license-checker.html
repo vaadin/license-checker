@@ -31,7 +31,7 @@
     }
 
     setLastCheck(productInfo, timestamp) {
-      this.logger.debug("Setting last check time to "+new Date(timestamp));
+      this.logger.debug("Setting last check time to " + new Date(timestamp));
       localStorage.setItem(this.getLastCheckKey(productInfo), timestamp);
     }
   }
@@ -49,16 +49,16 @@
     static get version() {
       return '2.0.0';
     }
-    getForcedResponseKey(productInfo) {
-      return 'vaadin.licenses.{product}.forcedResponse'.replace('{product}',productInfo.name);
-    }
 
+    getForcedResponseKey(productInfo) {
+      return 'vaadin.licenses.{product}.forcedResponse'.replace('{product}', productInfo.name);
+    }
 
     getForcedResponse(productInfo) {
       return localStorage.getItem(this.getForcedResponseKey(productInfo));
     }
     clearForcedResponse(productInfo) {
-      return localStorage.removeItem(this.getForcedResponseKey(productInfo));      
+      return localStorage.removeItem(this.getForcedResponseKey(productInfo));
     }
 
     maybeCheck(productInfo) {
@@ -126,14 +126,14 @@
       this.validationNeededNotifier.hide(productInfo);
 
       if (this.logger.isDebug() && this.getForcedResponse(productInfo)) {
-        const resp = this.getForcedResponse(productInfo);
+        const respJson = this.getForcedResponse(productInfo);
         this.clearForcedResponse(productInfo);
-        if (resp.type == "error") {
+        if (JSON.parse(respJson).type == "error") {
           this.logger.debug("Forced error for check");
           onerror();
         } else {
-          this.logger.debug("Forced response for check: " + JSON.stringify(resp));
-          onresponse(resp);
+          this.logger.debug("Forced response for check: " + respJson);
+          onresponse(respJson);
         }
       } else {
         this.send(this.url, payload, onresponse, onerror);
@@ -160,7 +160,7 @@
       return 'vaadin-license-validation-ok';
     }
     getInstance() {
-      return document.getElementById(this.id);
+      return document.getElementById(LicenseOkNotifier.id);
     }
     show(productInfo) {
       // Only show one ok box even if multiple licenses were checked
@@ -169,7 +169,7 @@
         return;
       }
       const instance = document.createElement("vaadin-license-box");
-      instance.id = this.id;
+      instance.id = LicenseOkNotifier.id;
       instance.type = "ok";
       instance.content = "Your license has been validated";
       document.body.appendChild(instance);
@@ -217,27 +217,25 @@
 
 
   const proProducts = [];
-  const checker = new LicenseChecker();
-
   window.Vaadin = window.Vaadin || {};
+  window.Vaadin.LicenseChecker = window.Vaadin.LicenseChecker || new LicenseChecker();
   window.Vaadin.developmentModeCallback = window.Vaadin.developmentModeCallback || {};
   window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function (cls) {
     var productInfo = { name: cls.is, version: cls.version };
     proProducts.push(productInfo);
     window.addEventListener("message", function (e) {
       if (e.data == "validate-license") {
-        checker.check(productInfo);
+        window.Vaadin.LicenseChecker.check(productInfo);
       }
     }, false);
 
-    checker.maybeCheck(productInfo);
+    window.Vaadin.checkLicenses = function () {
+      // Force checking of all licenses to avoid e.g. popups during presentations when the grace period just has ended
+      proProducts.forEach(productInfo => {
+        window.Vaadin.LicenseChecker.check(productInfo);
+      });
+    }
+
+    window.Vaadin.LicenseChecker.maybeCheck(productInfo);
   };
-  window.Vaadin.checkLicenses = function () {
-    // Force checking of all licenses to avoid e.g. popups during presentations when the grace period just has ended
-    proProducts.forEach(productInfo => {
-      checker.check(productInfo);
-    });
-  }
-
-
 </script>

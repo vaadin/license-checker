@@ -12,11 +12,11 @@
 <body>
     <script>
         WCT.loadSuites([
-            'license-box-test.html',
-            'license-check-24-hour-storage.html',
-            'license-checker-test.html',
-            'license-check-no-license.html',
-            'license-check-no-license-24-hours-passed.html'
+            'check-interval.html',
+            'external-triggers.html',
+            'logging.html',
+            'multiple-products.html',
+            'visual-indication.html'
         ].reduce((suites, suite) => {
             return suites.concat([suite, suite + '?wc-shadydom=true'])
         }, []));
