@@ -31,6 +31,9 @@
             this.checkCalled++;
             super.check(productInfo);
           }
+          send(url, productInfo, onsuccess, onerror) {
+            // Don't send to the actual server
+          }
         }
 
         var productInfo;
