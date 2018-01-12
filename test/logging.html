@@ -40,8 +40,8 @@
                 var productInfo;
                 suiteSetup(function () {
                     productInfo = { "name": "test-product", "version": "1.2.3" };
-                }); window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "foo-foo", "version": "1.2.3" });
-                window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "bar-bar", "version": "2.2.2" });
+                }); window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product1", "version": "1.2.3" });
+                window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product2", "version": "2.2.2" });
 
                 setup(function () {
                     window.localStorage.clear();

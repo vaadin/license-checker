@@ -40,8 +40,8 @@
                 var productInfo;
                 suiteSetup(function () {
                     productInfo = { "name": "test-product", "version": "1.2.3" };
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "foo-foo", "version": "1.2.3" });
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "bar-bar", "version": "2.2.2" });
+                    window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product1", "version": "1.2.3" });
+                    window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product2", "version": "2.2.2" });
                 });
 
                 setup(function () {
@@ -53,8 +53,8 @@
                     assert.equal(Object.keys(window.Vaadin.LicenseChecker.checkCalled).length, 0);
                     window.postMessage('validate-license', '*');
                     setTimeout(function () {
-                        assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "foo-foo", "version": "1.2.3" })], 1);
-                        assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "bar-bar", "version": "2.2.2" })], 1);
+                        assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "test-product1", "version": "1.2.3" })], 1);
+                        assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "test-product2", "version": "2.2.2" })], 1);
                         done();
                     }, 1);
                 });
@@ -63,8 +63,8 @@
                     window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
                     assert.equal(Object.keys(window.Vaadin.LicenseChecker.checkCalled).length, 0);
                     window.Vaadin.checkLicenses();
-                    assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "foo-foo", "version": "1.2.3" })], 1);
-                    assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "bar-bar", "version": "2.2.2" })], 1);
+                    assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "test-product1", "version": "1.2.3" })], 1);
+                    assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "test-product2", "version": "2.2.2" })], 1);
                     done();
                 });
 
