@@ -92,10 +92,6 @@
       // For background checks, show no visual notification if all goes well
       var showOkOnSuccess = this.validationNeededNotifier.isVisible(productInfo);
 
-      const payload = {
-        "product-name": productInfo.name,
-        "product-version": productInfo.version
-      };
       const checker = this;
       const onerror = function () {
         // Offline or blocked, just log to console and let people get work done
@@ -136,10 +132,10 @@
           onresponse(respJson);
         }
       } else {
-        this.send(this.url, payload, onresponse, onerror);
+        this.send(this.url, productInfo, onresponse, onerror);
       }
     }
-    send(url, data, onsuccess, onerror) {
+    send(url, productInfo, onsuccess, onerror) {
       this.logger.debug("Sending request to " + url);
       var req = new XMLHttpRequest();
       req.withCredentials = true;
@@ -152,7 +148,11 @@
         onerror();
       });
       req.open("GET", url);
-      req.send(JSON.stringify(data));
+      req.setRequestHeader("check-source","webcomponent");
+      req.setRequestHeader("product-name", productInfo.name);
+      req.setRequestHeader("product-version", productInfo.version);
+
+      req.send();
     };
   }
   class LicenseOkNotifier {
