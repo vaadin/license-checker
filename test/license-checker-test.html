@@ -61,6 +61,16 @@
                     expect(licenseChecker._isValidLicense(
                         "some-product", 2)).to.be.true;
                 });
+
+            test(
+                'validate that version number can be set as semver string',
+                function() {
+                    var licenseChecker = new LicenseChecker();
+                    licenseChecker.productVersion = "2.0.0";
+                    licenseChecker.productName = "some-product";
+                    expect(licenseChecker._isValidLicense(
+                        "some-product", 2)).to.be.true;
+                });
         });
     </script>
 

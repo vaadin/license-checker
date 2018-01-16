@@ -265,9 +265,13 @@
             },
 
             _isValidLicense: function(productName, productVersion) {
-                return productName === this.productName && (
-                    productVersion == this.productVersion || !
-                    this._exists(productVersion));
+                return productName === this.productName && (!
+                    this._exists(productVersion) || 
+                    productVersion == this._getMajor(String(this.productVersion)));
+            },
+
+            _getMajor: function(productVersion) {
+                return productVersion.split('.')[0];
             },
 
             _fireLoadReadyEvent: function() {
