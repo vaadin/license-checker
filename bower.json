@@ -24,6 +24,7 @@
   },
   "main": [
     "demo/license-checker-basic-demos.html",
+    "demo/license-checker-basic-demos.js",
     "demo/license-checker-basic-demos.js"
   ]
 }
