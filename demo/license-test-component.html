@@ -1,7 +1,3 @@
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-input/iron-input.html">
-<link rel="import" href="../../vaadin-development-mode-detector/vaadin-development-mode-detector.html">
-
 <dom-module id="license-test-component">
     <template>
         <input is="iron-input" type="text" bind-value="{{inputValue}}">
@@ -9,23 +5,25 @@
 </dom-module>
 
 <script>
-class LicenseTestElement extends Polymer.Element {
-  static get is() {
-    return 'license-test-component';
-  }
-  static get version() {
-    return '1.2.3';
-  }
-  static get properties() {
-    return {
-      inputValue: {
-        type: String
+    class LicenseTestElement extends Polymer.Element {
+      static get is() {
+        return 'license-test-component';
       }
-    };
-  }
-}
+      static get version() {
+        return '1.2.3';
+      }
+      static get properties() {
+        return {
+          inputValue: {
+            type: String
+          }
+        };
+      }
+    }
 
-customElements.define(LicenseTestElement.is, LicenseTestElement);
+    customElements.define(LicenseTestElement.is, LicenseTestElement);
 
-Vaadin.runIfDevelopmentMode('vaadin-license-checker', LicenseTestElement);
+    if (window.Vaadin.runIfDevelopmentMode) {
+      window.Vaadin.runIfDevelopmentMode('vaadin-license-checker', LicenseTestElement);
+    }
 </script>

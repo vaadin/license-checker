@@ -1,0 +1,25 @@
+<dom-module id="license-checker-basic-demos">
+    <template>
+        <style include="vaadin-component-demo-shared-styles">
+            :host {
+              display: block;
+            }
+        </style>
+
+        <h3>Basic License Test Component</h3>
+        <vaadin-demo-snippet id='license-checker-basic-demos-basic'>
+            <template preserve-content>
+                <license-test-component></license-test-component>
+            </template>
+        </vaadin-demo-snippet>
+
+    </template>
+    <script>
+        class LicenseCheckerBasicDemos extends DemoReadyEventEmitter(LicenseCheckerDemo(Polymer.Element)) {
+            static get is() {
+                return 'license-checker-basic-demos';
+            }
+        }
+        customElements.define(LicenseCheckerBasicDemos.is, LicenseCheckerBasicDemos);
+    </script>
+</dom-module>

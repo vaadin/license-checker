@@ -17,6 +17,15 @@
   },
   "devDependencies": {
     "web-component-tester": "^6.0.0",
-    "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0"
-  }
+    "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0",
+    "vaadin-demo-helpers": "vaadin/vaadin-demo-helpers#p3-preview",
+    "iron-input": "^2.1.2",
+    "vaadin-development-mode-detector": "vaadin/vaadin-development-mode-detector#^1.0.3"
+  },
+  "main": [
+    "demo/license-checker-basic-demos.html",
+    "demo/license-checker-basic-demos.js",
+    "demo/license-checker-basic-demos.js",
+    "demo/license-checker-basic-demos.js"
+  ]
 }
