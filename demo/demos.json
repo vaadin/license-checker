@@ -1,15 +1,15 @@
 {
-    "name": "Vaadin License Checker",
-    "pages": [
-        {
-          "name": "Basics",
-          "url": "license-checker-basic-demos",
-          "src": "license-checker-basic-demos.html",
-          "meta": {
-              "title": "Vaadin License Checker Button Basic Examples",
-              "description": "",
-              "image": ""
-          }
-        }
-    ]
+  "name": "Vaadin License Checker",
+  "pages": [
+    {
+      "name": "Basics",
+      "url": "license-checker-basic-demos",
+      "src": "license-checker-basic-demos.js",
+      "meta": {
+        "title": "Vaadin License Checker Button Basic Examples",
+        "description": "",
+        "image": ""
+      }
+    }
+  ]
 }
