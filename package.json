@@ -3,5 +3,13 @@
   "version": "2.0.1",
   "main": "vaadin-license-checker.html",
   "repository": "vaadin/license-checker",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "wct --plugin sauce"
+  },
+  "devDependencies": {
+    "bower": "^1.4.1",
+    "gulp": "^3.8.11",
+    "web-component-tester": "^6.0.0"
+  }
 }
