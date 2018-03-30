@@ -3,6 +3,9 @@ node_js: 8.1
 
 before_script:
 - bower install
+env:
+  - POLYMER=2
+  - POLYMER=3
 notifications:
   flowdock:
     on_failure: change
