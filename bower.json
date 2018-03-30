@@ -23,6 +23,7 @@
     "vaadin-development-mode-detector": "vaadin/vaadin-development-mode-detector#^1.0.3"
   },
   "main": [
-    "demo/license-checker-basic-demos.html"
+    "demo/license-checker-basic-demos.html",
+    "demo/license-checker-basic-demos.js"
   ]
 }
