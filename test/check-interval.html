@@ -17,7 +17,7 @@
     HTMLImports.whenReady(() => {
       suite('Check interval', function () {
 
-        class LoggingLicenseChecker extends LicenseChecker {
+        class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
           constructor() {
             super();
             this.maybeCheckCalled = 0;
@@ -43,7 +43,7 @@
         });
 
         test('no check in first 24h', function () {
-          class TestLicenseChecker extends LicenseChecker {
+          class TestLicenseChecker extends window.Vaadin.LicenseCheckerClass {
             check(productInfo) {
               assert.fail(0, 0, "Check should not be called");
             }

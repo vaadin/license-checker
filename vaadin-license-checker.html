@@ -36,7 +36,7 @@
     }
   }
 
-  class LicenseChecker {
+  class VaadinLicenseChecker {
     constructor() {
       this.okNotifier = new LicenseOkNotifier();
       this.validationNeededNotifier = new LicenseValidationNeededNotifier();
@@ -209,15 +209,12 @@
       return !!this.getInstance(productInfo);
     }
   }
-
-
-
-
-
-
+  
   const proProducts = [];
+
   window.Vaadin = window.Vaadin || {};
-  window.Vaadin.LicenseChecker = window.Vaadin.LicenseChecker || new LicenseChecker();
+  window.Vaadin.LicenseChecker = window.Vaadin.VaadinLicenseChecker || new VaadinLicenseChecker();
+  window.Vaadin.LicenseCheckerClass = window.Vaadin.LicenseCheckerClass || VaadinLicenseChecker;
   window.Vaadin.developmentModeCallback = window.Vaadin.developmentModeCallback || {};
   window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function (cls) {
     var productInfo = { name: cls.is, version: cls.version };
