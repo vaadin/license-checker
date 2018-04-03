@@ -17,7 +17,7 @@
         HTMLImports.whenReady(() => {
             suite('External triggers', function () {
 
-                class LoggingLicenseChecker extends LicenseChecker {
+                class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
                     constructor() {
                         super();
                         this.maybeCheckCalled = {};
