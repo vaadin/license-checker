@@ -218,6 +218,7 @@
   const proProducts = [];
   window.Vaadin = window.Vaadin || {};
   window.Vaadin.LicenseChecker = window.Vaadin.LicenseChecker || new LicenseChecker();
+  window.Vaadin.LicenseCheckerClass = window.Vaadin.LicenseCheckerClass || LicenseChecker;
   window.Vaadin.developmentModeCallback = window.Vaadin.developmentModeCallback || {};
   window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function (cls) {
     var productInfo = { name: cls.is, version: cls.version };
