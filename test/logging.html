@@ -17,7 +17,7 @@
         HTMLImports.whenReady(() => {
             suite('Logging', function () {
 
-                class LoggingLicenseChecker extends LicenseChecker {
+                class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
                     constructor() {
                         super();
                         this.maybeCheckCalled = {};
@@ -37,7 +37,7 @@
                     }
                 }
 
-                var productInfo;
+                var productInfo, checker;
                 suiteSetup(function () {
                     productInfo = { "name": "test-product", "version": "1.2.3" };
                 }); window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product1", "version": "1.2.3" });
@@ -47,7 +47,7 @@
                     window.localStorage.clear();
                 });
 
-                forceResponse = function (resp) {
+                window.forceResponse = function (resp) {
                     localStorage.setItem("vaadin.licenses.debug", true);
                     localStorage.setItem(checker.getForcedResponseKey(productInfo), JSON.stringify(resp));
                 }
@@ -62,7 +62,7 @@
                             }
                         }
                         checker = new LoggingLicenseChecker();
-                        forceResponse({ result: "ok", message: testMessage });
+                        window.forceResponse({ result: "ok", message: testMessage });
                         checker.check(productInfo);
                         assert.equal(loggedTestMessage, 1);
                     } finally {
@@ -81,7 +81,7 @@
                             }
                         }
                         checker = new LoggingLicenseChecker();
-                        forceResponse({ result: "ok", message: testMessage });
+                        window.forceResponse({ result: "ok", message: testMessage });
                         checker.check(productInfo);
                         assert.equal(loggedTestMessage, 0);
                     } finally {
@@ -102,7 +102,7 @@
                             }
                         }
                         checker = new LoggingLicenseChecker();
-                        forceResponse({ type: "error" });
+                        window.forceResponse({ type: "error" });
                         checker.check(productInfo);
                         assert.equal(loggedTestMessage, 1);
                     } finally {
