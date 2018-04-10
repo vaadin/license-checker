@@ -16,7 +16,7 @@
     <script>
         HTMLImports.whenReady(() => {
             suite('Multiple products', function () {
-                class LoggingLicenseChecker extends LicenseChecker {
+                class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
                     constructor() {
                         super();
                         this.maybeCheckCalled = {};
@@ -39,9 +39,9 @@
                     }
                 }
 
-                var product1, product2;
+                var product1, product2, product3;
 
-                createProduct = function (name, version) {
+                window.createProduct = function (name, version) {
                     var product = {};
                     product.element = { is: name, version: version };
                     product.info = { name: name, version: version };
@@ -50,9 +50,9 @@
                     return product;
                 }
                 suiteSetup(function () {
-                    product1 = createProduct("test-product1", "1.2.3");
-                    product2 = createProduct("test-product2", "2.2.2");
-                    product3 = createProduct("test-product3", "99.99.99");
+                    product1 = window.createProduct("test-product1", "1.2.3");
+                    product2 = window.createProduct("test-product2", "2.2.2");
+                    product3 = window.createProduct("test-product3", "99.99.99");
 
                     window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
 
@@ -69,7 +69,7 @@
 
                 });
 
-                forceResponse = function (productInfo, response) {
+                window.forceResponse = function (productInfo, response) {
                     localStorage.setItem("vaadin.licenses.debug", true);
                     localStorage.setItem(window.Vaadin.LicenseChecker.getForcedResponseKey(productInfo), JSON.stringify(response));
                 }
@@ -82,13 +82,13 @@
 
                 test('Only one ok dialog is shown after validating multiple products', function () {
                     // Force validation dialog to be shown
-                    forceResponse(product1.info, { result: "nokey" });
-                    forceResponse(product2.info, { result: "nokey" });
-                    forceResponse(product3.info, { result: "nokey" });
+                    window.forceResponse(product1.info, { result: "nokey" });
+                    window.forceResponse(product2.info, { result: "nokey" });
+                    window.forceResponse(product3.info, { result: "nokey" });
                     window.Vaadin.checkLicenses();
-                    forceResponse(product1.info, { result: "ok" });
-                    forceResponse(product2.info, { result: "ok" });
-                    forceResponse(product3.info, { result: "ok" });
+                    window.forceResponse(product1.info, { result: "ok" });
+                    window.forceResponse(product2.info, { result: "ok" });
+                    window.forceResponse(product3.info, { result: "ok" });
                     window.Vaadin.checkLicenses();
                     assert.isOk(window.Vaadin.LicenseChecker.okNotifier.getInstance())
                     assert.equal(document.querySelectorAll("vaadin-license-box").length, 1);
@@ -96,18 +96,18 @@
 
                 test('All validation dialogs are hidden when check succeeds', function () {
                     // Force validation dialog to be shown
-                    forceResponse(product1.info, { result: "nokey" });
-                    forceResponse(product2.info, { result: "nokey" });
-                    forceResponse(product3.info, { result: "nokey" });
+                    window.forceResponse(product1.info, { result: "nokey" });
+                    window.forceResponse(product2.info, { result: "nokey" });
+                    window.forceResponse(product3.info, { result: "nokey" });
                     window.Vaadin.checkLicenses();
 
                     assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product1.info));
                     assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product2.info));
                     assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product3.info));
 
-                    forceResponse(product1.info, { result: "ok" });
-                    forceResponse(product2.info, { result: "ok" });
-                    forceResponse(product3.info, { result: "ok" });
+                    window.forceResponse(product1.info, { result: "ok" });
+                    window.forceResponse(product2.info, { result: "ok" });
+                    window.forceResponse(product3.info, { result: "ok" });
                     window.Vaadin.checkLicenses();
 
                     assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product1.info));
