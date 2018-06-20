@@ -13,10 +13,11 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
   },
   "devDependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
     "web-component-tester": "^6.0.0",
-    "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0"
+    "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0",
+    "vaadin-development-mode-detector": "vaadin/vaadin-development-mode-detector#^1.1.0"
   }
 }
