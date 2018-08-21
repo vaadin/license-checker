@@ -1,0 +1,25 @@
+<link rel="import" href="../vaadin-development-mode-detector/vaadin-development-mode-detector.html">
+
+<script>
+(function() {
+  function maybeCheckLicenses() {
+    /** vaadin-dev-mode:start
+    ${vaadin-license-checker.js}
+    vaadin-dev-mode:end **/
+  };
+
+  /**
+   * @namespace Vaadin
+   */
+  window.Vaadin = window.Vaadin || {};
+
+  /**
+   * @memberof Vaadin
+   */
+  window.Vaadin.licenseChecker = function() {
+    if (typeof window.Vaadin.runIfDevelopmentMode === 'function') {
+      return window.Vaadin.runIfDevelopmentMode(maybeCheckLicenses);
+    }
+  };
+})();
+</script>

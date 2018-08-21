@@ -2,116 +2,116 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../vaadin-license-checker.html">
+  <script src="../src/vaadin-license-checker.js"></script>
 </head>
 
 <body>
 
-    <script>
-        HTMLImports.whenReady(() => {
-            suite('Logging', function () {
+  <script>
 
-                class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
-                    constructor() {
-                        super();
-                        this.maybeCheckCalled = {};
-                        this.checkCalled = {};
-                    }
-                    maybeCheck(productInfo) {
-                        const productInfoString = JSON.stringify(productInfo);
-                        this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
-                        this.maybeCheckCalled[productInfoString]++;
-                        super.maybeCheck(productInfo);
-                    }
-                    check(productInfo) {
-                        const productInfoString = JSON.stringify(productInfo);
-                        this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
-                        this.checkCalled[productInfoString]++;
-                        super.check(productInfo);
-                    }
-                }
+    suite('Logging', function () {
 
-                var productInfo, checker;
-                suiteSetup(function () {
-                    productInfo = { "name": "test-product", "version": "1.2.3" };
-                }); window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product1", "version": "1.2.3" });
-                window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product2", "version": "2.2.2" });
+      class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
+        constructor() {
+          super();
+          this.maybeCheckCalled = {};
+          this.checkCalled = {};
+        }
+        maybeCheck(productInfo) {
+          const productInfoString = JSON.stringify(productInfo);
+          this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
+          this.maybeCheckCalled[productInfoString]++;
+          super.maybeCheck(productInfo);
+        }
+        check(productInfo) {
+          const productInfoString = JSON.stringify(productInfo);
+          this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
+          this.checkCalled[productInfoString]++;
+          super.check(productInfo);
+        }
+      }
 
-                setup(function () {
-                    window.localStorage.clear();
-                });
+      var productInfo, checker;
+      suiteSetup(function () {
+        productInfo = { "name": "test-product", "version": "1.2.3" };
+      }); window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product1", "version": "1.2.3" });
+      window.Vaadin.developmentModeCallback["vaadin-license-checker"]({ "is": "test-product2", "version": "2.2.2" });
 
-                window.forceResponse = function (resp) {
-                    localStorage.setItem("vaadin.licenses.debug", true);
-                    localStorage.setItem(checker.getForcedResponseKey(productInfo), JSON.stringify(resp));
-                }
-                test('Message returned from server logged to the browser console', function () {
-                    const testMessage = "some-message";
-                    var oldConsoleLog = window.console.log;
-                    try {
-                        var loggedTestMessage = 0;
-                        window.console.log = function (msg) {
-                            if (msg == testMessage) {
-                                loggedTestMessage++;
-                            }
-                        }
-                        checker = new LoggingLicenseChecker();
-                        window.forceResponse({ result: "ok", message: testMessage });
-                        checker.check(productInfo);
-                        assert.equal(loggedTestMessage, 1);
-                    } finally {
-                        window.console.log = oldConsoleLog;
-                    }
-                });
+      setup(function () {
+        window.localStorage.clear();
+      });
 
-                test('Empty message returned from the server does not log to the browser console', function () {
-                    const testMessage = "";
-                    var oldConsoleLog = window.console.log;
-                    try {
-                        var loggedTestMessage = 0;
-                        window.console.log = function (msg) {
-                            if (msg == testMessage) {
-                                loggedTestMessage++;
-                            }
-                        }
-                        checker = new LoggingLicenseChecker();
-                        window.forceResponse({ result: "ok", message: testMessage });
-                        checker.check(productInfo);
-                        assert.equal(loggedTestMessage, 0);
-                    } finally {
-                        window.console.log = oldConsoleLog;
-                    }
-                });
+      window.forceResponse = function (resp) {
+        localStorage.setItem("vaadin.licenses.debug", true);
+        localStorage.setItem(checker.getForcedResponseKey(productInfo), JSON.stringify(resp));
+      }
+      test('Message returned from server logged to the browser console', function () {
+        const testMessage = "some-message";
+        var oldConsoleLog = window.console.log;
+        try {
+          var loggedTestMessage = 0;
+          window.console.log = function (msg) {
+            if (msg == testMessage) {
+              loggedTestMessage++;
+            }
+          }
+          checker = new LoggingLicenseChecker();
+          window.forceResponse({ result: "ok", message: testMessage });
+          checker.check(productInfo);
+          assert.equal(loggedTestMessage, 1);
+        } finally {
+          window.console.log = oldConsoleLog;
+        }
+      });
 
-                test('Unreachable license server logs an error message to the browser console', function () {
-                    const testMessage = "Unable to validate the license for " + productInfo.name + ".";
-                    var oldConsoleError = window.console.error;
-                    try {
-                        var loggedTestMessage = 0;
-                        window.console.error = function (msg) {
-                            if (msg.indexOf(testMessage) != -1) {
-                                loggedTestMessage++;
-                            } else {
-                                throw msg;
-                            }
-                        }
-                        checker = new LoggingLicenseChecker();
-                        window.forceResponse({ type: "error" });
-                        checker.check(productInfo);
-                        assert.equal(loggedTestMessage, 1);
-                    } finally {
-                        window.console.error = oldConsoleError;
-                    }
-                });
-            });
-        });
-    </script>
+      test('Empty message returned from the server does not log to the browser console', function () {
+        const testMessage = "";
+        var oldConsoleLog = window.console.log;
+        try {
+          var loggedTestMessage = 0;
+          window.console.log = function (msg) {
+            if (msg == testMessage) {
+              loggedTestMessage++;
+            }
+          }
+          checker = new LoggingLicenseChecker();
+          window.forceResponse({ result: "ok", message: testMessage });
+          checker.check(productInfo);
+          assert.equal(loggedTestMessage, 0);
+        } finally {
+          window.console.log = oldConsoleLog;
+        }
+      });
+
+      test('Unreachable license server logs an error message to the browser console', function () {
+        const testMessage = "Unable to validate the license for " + productInfo.name + ".";
+        var oldConsoleError = window.console.error;
+        try {
+          var loggedTestMessage = 0;
+          window.console.error = function (msg) {
+            if (msg.indexOf(testMessage) != -1) {
+              loggedTestMessage++;
+            } else {
+              throw msg;
+            }
+          }
+          checker = new LoggingLicenseChecker();
+          window.forceResponse({ type: "error" });
+          checker.check(productInfo);
+          assert.equal(loggedTestMessage, 1);
+        } finally {
+          window.console.error = oldConsoleError;
+        }
+      });
+    });
+
+  </script>
 </body>
 
 </html>

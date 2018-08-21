@@ -2,140 +2,136 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../vaadin-license-checker.html">
+  <script src="../src/vaadin-license-checker.js"></script>
 </head>
 
 <body>
+  <script>
+    suite('Visual indication', function () {
+      var product;
 
-    <script>
-        HTMLImports.whenReady(() => {
-            suite('Visual indication', function () {
-                class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
-                    constructor() {
-                        super();
-                        this.maybeCheckCalled = {};
-                        this.checkCalled = {};
-                    }
-                    maybeCheck(productInfo) {
-                        const productInfoString = JSON.stringify(productInfo);
-                        this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
-                        this.maybeCheckCalled[productInfoString]++;
-                        super.maybeCheck(productInfo);
-                    }
-                    check(productInfo) {
-                        const productInfoString = JSON.stringify(productInfo);
-                        this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
-                        this.checkCalled[productInfoString]++;
-                        super.check(productInfo);
-                    }
-                    send(url, productInfo, onsuccess, onerror) {
-                        // Don't send to the actual server
-                    }
-                }
+      window.createProduct = function (name, version) {
+        var product = {};
+        product.element = { is: name, version: version };
+        product.info = { name: name, version: version };
+        product.infoString = JSON.stringify(product.info);
 
-                var product;
+        return product;
+      }
+      suiteSetup(() => {
+        class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
+          constructor() {
+            super();
+            this.maybeCheckCalled = {};
+            this.checkCalled = {};
+          }
+          maybeCheck(productInfo) {
+            const productInfoString = JSON.stringify(productInfo);
+            this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
+            this.maybeCheckCalled[productInfoString]++;
+            super.maybeCheck(productInfo);
+          }
+          check(productInfo) {
+            const productInfoString = JSON.stringify(productInfo);
+            this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
+            this.checkCalled[productInfoString]++;
+            super.check(productInfo);
+          }
+          send(url, productInfo, onsuccess, onerror) {
+            // Don't send to the actual server
+          }
+        };
 
-                window.createProduct = function (name, version) {
-                    var product = {};
-                    product.element = { is: name, version: version };
-                    product.info = { name: name, version: version };
-                    product.infoString = JSON.stringify(product.info);
+        product = window.createProduct("test-product1", "1.2.3");
+        window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
+      });
 
-                    return product;
-                }
-                suiteSetup(function () {
-                    product = window.createProduct("test-product1", "1.2.3");
-                    window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
+      setup(function () {
+        window.localStorage.clear();
+        window.Vaadin.LicenseChecker.storage.setLastCheck(product.info, 1);
+      });
 
-                });
+      window.forceResponse = function (productInfo, response) {
+        localStorage.setItem("vaadin.licenses.debug", true);
+        localStorage.setItem(window.Vaadin.LicenseChecker.getForcedResponseKey(productInfo), JSON.stringify(response));
+      }
 
-                setup(function () {
-                    window.localStorage.clear();
-                    window.Vaadin.LicenseChecker.storage.setLastCheck(product.info, 1);
-                });
+      test('Background check only if reponse is ok', function () {
+        window.forceResponse(product.info, { result: "ok" });
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
+        assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
+        assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
+      });
 
-                window.forceResponse = function (productInfo, response) {
-                    localStorage.setItem("vaadin.licenses.debug", true);
-                    localStorage.setItem(window.Vaadin.LicenseChecker.getForcedResponseKey(productInfo), JSON.stringify(response));
-                }
+      test('Validation dialog shown if background check fails', function () {
+        window.forceResponse(product.info, { result: "nokey" });
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
+        assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
+        assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
+      });
 
-                test('Background check only if reponse is ok', function () {
-                    window.forceResponse(product.info, { result: "ok" });
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
-                    assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
-                    assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
-                });
+      test('No dialogs shown if background check errors', function () {
+        window.forceResponse(product.info, { type: "error" });
+        const oldError = window.console.error;
+        window.console.error = function () { };
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
+        assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
+        assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
+        window.console.error = oldError;
+      });
 
-                test('Validation dialog shown if background check fails', function () {
-                    window.forceResponse(product.info, { result: "nokey" });
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
-                    assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
-                    assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
-                });
+      test('No validation dialog shown if background check errors', function () {
+        window.forceResponse(product.info, { type: "error" });
+        const oldError = window.console.error;
+        window.console.error = function () { };
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
+        assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
+        assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
+        window.console.error = oldError;
+      });
 
-                test('No dialogs shown if background check errors', function () {
-                    window.forceResponse(product.info, { type: "error" });
-                    const oldError = window.console.error;
-                    window.console.error = function () { };
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
-                    assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
-                    assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
-                    window.console.error = oldError;
-                });
+      test('Ok dialog shown when check succeeds with validation dialog open', function () {
+        window.forceResponse(product.info, { result: "nokey" });
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
+        assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
 
-                test('No validation dialog shown if background check errors', function () {
-                    window.forceResponse(product.info, { type: "error" });
-                    const oldError = window.console.error;
-                    window.console.error = function () { };
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
-                    assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
-                    assert.isNotOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
-                    window.console.error = oldError;
-                });
+        window.forceResponse(product.info, { result: "ok" });
+        window.Vaadin.checkLicenses();
+        assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
+        assert.isOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
+      });
 
-                test('Ok dialog shown when check succeeds with validation dialog open', function () {
-                    window.forceResponse(product.info, { result: "nokey" });
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
-                    assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
+      test('Ok dialog disappears on click', function () {
+        window.forceResponse(product.info, { result: "nokey" });
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
+        window.forceResponse(product.info, { result: "ok" });
+        window.Vaadin.checkLicenses();
+        const okDialog = window.Vaadin.LicenseChecker.okNotifier.getInstance();
+        assert.isOk(okDialog.parentNode);
+        okDialog.click();
+        assert.isNotOk(okDialog.parentNode);
+      });
 
-                    window.forceResponse(product.info, { result: "ok" });
-                    window.Vaadin.checkLicenses();
-                    assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info));
-                    assert.isOk(window.Vaadin.LicenseChecker.okNotifier.getInstance());
-                });
+      test('Clicking on validation dialog opens url', function () {
+        window.forceResponse(product.info, { result: "nokey" });
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
+        const oldOpen = window.open;
+        window.open = function (url) {
+          window.openedUrl = url;
+        }
 
-                test('Ok dialog disappears on click', function () {
-                    window.forceResponse(product.info, { result: "nokey" });
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
-                    window.forceResponse(product.info, { result: "ok" });
-                    window.Vaadin.checkLicenses();
-                    const okDialog = window.Vaadin.LicenseChecker.okNotifier.getInstance();
-                    assert.isOk(okDialog.parentNode);
-                    okDialog.click();
-                    assert.isNotOk(okDialog.parentNode);
-                });
-
-                test('Clicking on validation dialog opens url', function () {
-                    window.forceResponse(product.info, { result: "nokey" });
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product.element);
-                    const oldOpen = window.open;
-                    window.open = function (url) {
-                        window.openedUrl = url;
-                    }
-
-                    window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info).click();
-                    window.open = oldOpen;
-                    assert.equal(window.openedUrl, "https://vaadin.com/pro/validate-license");
-                });
-            });
-        });
-    </script>
+        window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product.info).click();
+        window.open = oldOpen;
+        assert.equal(window.openedUrl, "https://vaadin.com/pro/validate-license");
+      });
+    });
+  </script>
 </body>
 
 </html>

@@ -2,122 +2,121 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../vaadin-license-checker.html">
+  <script src="../src/vaadin-license-checker.js"></script>
 </head>
 
 <body>
 
-    <script>
-        HTMLImports.whenReady(() => {
-            suite('Multiple products', function () {
-                class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
-                    constructor() {
-                        super();
-                        this.maybeCheckCalled = {};
-                        this.checkCalled = {};
-                    }
-                    maybeCheck(productInfo) {
-                        const productInfoString = JSON.stringify(productInfo);
-                        this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
-                        this.maybeCheckCalled[productInfoString]++;
-                        super.maybeCheck(productInfo);
-                    }
-                    check(productInfo) {
-                        const productInfoString = JSON.stringify(productInfo);
-                        this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
-                        this.checkCalled[productInfoString]++;
-                        super.check(productInfo);
-                    }
-                    send(url, productInfo, onsuccess, onerror) {
-                        // Don't send to the actual server
-                    }
-                }
+  <script>
 
-                var product1, product2, product3;
+    suite('Multiple products', function () {
+      class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
+        constructor() {
+          super();
+          this.maybeCheckCalled = {};
+          this.checkCalled = {};
+        }
+        maybeCheck(productInfo) {
+          const productInfoString = JSON.stringify(productInfo);
+          this.maybeCheckCalled[productInfoString] = this.maybeCheckCalled[productInfoString] || 0;
+          this.maybeCheckCalled[productInfoString]++;
+          super.maybeCheck(productInfo);
+        }
+        check(productInfo) {
+          const productInfoString = JSON.stringify(productInfo);
+          this.checkCalled[productInfoString] = this.checkCalled[productInfoString] || 0;
+          this.checkCalled[productInfoString]++;
+          super.check(productInfo);
+        }
+        send(url, productInfo, onsuccess, onerror) {
+          // Don't send to the actual server
+        }
+      }
 
-                window.createProduct = function (name, version) {
-                    var product = {};
-                    product.element = { is: name, version: version };
-                    product.info = { name: name, version: version };
-                    product.infoString = JSON.stringify(product.info);
+      var product1, product2, product3;
 
-                    return product;
-                }
-                suiteSetup(function () {
-                    product1 = window.createProduct("test-product1", "1.2.3");
-                    product2 = window.createProduct("test-product2", "2.2.2");
-                    product3 = window.createProduct("test-product3", "99.99.99");
+      window.createProduct = function (name, version) {
+        var product = {};
+        product.element = { is: name, version: version };
+        product.info = { name: name, version: version };
+        product.infoString = JSON.stringify(product.info);
 
-                    window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
+        return product;
+      }
+      suiteSetup(function () {
+        product1 = window.createProduct("test-product1", "1.2.3");
+        product2 = window.createProduct("test-product2", "2.2.2");
+        product3 = window.createProduct("test-product3", "99.99.99");
 
-                    window.Vaadin.LicenseChecker.storage.setLastCheck(product1.info, 1);
-                    window.Vaadin.LicenseChecker.storage.setLastCheck(product2.info, 1);
-                    window.Vaadin.LicenseChecker.storage.setLastCheck(product3.info, 1);
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product1.element);
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product2.element);
-                    window.Vaadin.developmentModeCallback["vaadin-license-checker"](product3.element);
-                });
+        window.Vaadin.LicenseChecker = new LoggingLicenseChecker();
 
-                setup(function () {
-                    window.localStorage.clear();
+        window.Vaadin.LicenseChecker.storage.setLastCheck(product1.info, 1);
+        window.Vaadin.LicenseChecker.storage.setLastCheck(product2.info, 1);
+        window.Vaadin.LicenseChecker.storage.setLastCheck(product3.info, 1);
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product1.element);
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product2.element);
+        window.Vaadin.developmentModeCallback["vaadin-license-checker"](product3.element);
+      });
 
-                });
+      setup(function () {
+        window.localStorage.clear();
 
-                window.forceResponse = function (productInfo, response) {
-                    localStorage.setItem("vaadin.licenses.debug", true);
-                    localStorage.setItem(window.Vaadin.LicenseChecker.getForcedResponseKey(productInfo), JSON.stringify(response));
-                }
+      });
 
-                test('Check is done for each product on the page', function () {
-                    assert.equal(window.Vaadin.LicenseChecker.checkCalled[product1.infoString], 1);
-                    assert.equal(window.Vaadin.LicenseChecker.checkCalled[product2.infoString], 1);
-                    assert.equal(window.Vaadin.LicenseChecker.checkCalled[product3.infoString], 1);
-                });
+      window.forceResponse = function (productInfo, response) {
+        localStorage.setItem("vaadin.licenses.debug", true);
+        localStorage.setItem(window.Vaadin.LicenseChecker.getForcedResponseKey(productInfo), JSON.stringify(response));
+      }
 
-                test('Only one ok dialog is shown after validating multiple products', function () {
-                    // Force validation dialog to be shown
-                    window.forceResponse(product1.info, { result: "nokey" });
-                    window.forceResponse(product2.info, { result: "nokey" });
-                    window.forceResponse(product3.info, { result: "nokey" });
-                    window.Vaadin.checkLicenses();
-                    window.forceResponse(product1.info, { result: "ok" });
-                    window.forceResponse(product2.info, { result: "ok" });
-                    window.forceResponse(product3.info, { result: "ok" });
-                    window.Vaadin.checkLicenses();
-                    assert.isOk(window.Vaadin.LicenseChecker.okNotifier.getInstance())
-                    assert.equal(document.querySelectorAll("vaadin-license-box").length, 1);
-                });
+      test('Check is done for each product on the page', function () {
+        assert.equal(window.Vaadin.LicenseChecker.checkCalled[product1.infoString], 1);
+        assert.equal(window.Vaadin.LicenseChecker.checkCalled[product2.infoString], 1);
+        assert.equal(window.Vaadin.LicenseChecker.checkCalled[product3.infoString], 1);
+      });
 
-                test('All validation dialogs are hidden when check succeeds', function () {
-                    // Force validation dialog to be shown
-                    window.forceResponse(product1.info, { result: "nokey" });
-                    window.forceResponse(product2.info, { result: "nokey" });
-                    window.forceResponse(product3.info, { result: "nokey" });
-                    window.Vaadin.checkLicenses();
+      test('Only one ok dialog is shown after validating multiple products', function () {
+        // Force validation dialog to be shown
+        window.forceResponse(product1.info, { result: "nokey" });
+        window.forceResponse(product2.info, { result: "nokey" });
+        window.forceResponse(product3.info, { result: "nokey" });
+        window.Vaadin.checkLicenses();
+        window.forceResponse(product1.info, { result: "ok" });
+        window.forceResponse(product2.info, { result: "ok" });
+        window.forceResponse(product3.info, { result: "ok" });
+        window.Vaadin.checkLicenses();
+        assert.isOk(window.Vaadin.LicenseChecker.okNotifier.getInstance())
+        assert.equal(document.querySelectorAll("vaadin-license-box").length, 1);
+      });
 
-                    assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product1.info));
-                    assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product2.info));
-                    assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product3.info));
+      test('All validation dialogs are hidden when check succeeds', function () {
+        // Force validation dialog to be shown
+        window.forceResponse(product1.info, { result: "nokey" });
+        window.forceResponse(product2.info, { result: "nokey" });
+        window.forceResponse(product3.info, { result: "nokey" });
+        window.Vaadin.checkLicenses();
 
-                    window.forceResponse(product1.info, { result: "ok" });
-                    window.forceResponse(product2.info, { result: "ok" });
-                    window.forceResponse(product3.info, { result: "ok" });
-                    window.Vaadin.checkLicenses();
+        assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product1.info));
+        assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product2.info));
+        assert.isOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product3.info));
 
-                    assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product1.info));
-                    assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product2.info));
-                    assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product3.info));
+        window.forceResponse(product1.info, { result: "ok" });
+        window.forceResponse(product2.info, { result: "ok" });
+        window.forceResponse(product3.info, { result: "ok" });
+        window.Vaadin.checkLicenses();
 
-                });
-            });
-        });
-    </script>
+        assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product1.info));
+        assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product2.info));
+        assert.isNotOk(window.Vaadin.LicenseChecker.validationNeededNotifier.getInstance(product3.info));
+
+      });
+    });
+  </script>
 </body>
 
 </html>

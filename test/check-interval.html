@@ -8,76 +8,74 @@
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
 
-  <link rel="import" href="../vaadin-license-checker.html">
+  <script src="../src/vaadin-license-checker.js"></script>
 </head>
 
 <body>
 
   <script>
-    HTMLImports.whenReady(() => {
-      suite('Check interval', function () {
+    suite('Check interval', function () {
 
-        class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
-          constructor() {
-            super();
-            this.maybeCheckCalled = 0;
-            this.checkCalled = 0;
-          }
-          maybeCheck(productInfo) {
-            this.maybeCheckCalled++;
-            super.maybeCheck(productInfo);
-          }
+      class LoggingLicenseChecker extends window.Vaadin.LicenseCheckerClass {
+        constructor() {
+          super();
+          this.maybeCheckCalled = 0;
+          this.checkCalled = 0;
+        }
+        maybeCheck(productInfo) {
+          this.maybeCheckCalled++;
+          super.maybeCheck(productInfo);
+        }
+        check(productInfo) {
+          this.checkCalled++;
+          super.check(productInfo);
+        }
+        send(url, productInfo, onsuccess, onerror) {
+          // Don't send to the actual server
+        }
+      }
+
+      var productInfo;
+      setup(function () {
+        window.localStorage.clear();
+        productInfo = { "name": "test-product", "version": "1.2.3" };
+      });
+
+      test('no check in first 24h', function () {
+        class TestLicenseChecker extends window.Vaadin.LicenseCheckerClass {
           check(productInfo) {
-            this.checkCalled++;
-            super.check(productInfo);
-          }
-          send(url, productInfo, onsuccess, onerror) {
-            // Don't send to the actual server
+            assert.fail(0, 0, "Check should not be called");
           }
         }
+        const checker = new TestLicenseChecker();
+        checker.maybeCheck(productInfo);
+        checker.maybeCheck(productInfo);
+        checker.maybeCheck(productInfo);
+      });
 
-        var productInfo;
-        setup(function () {
-          window.localStorage.clear();
-          productInfo = { "name": "test-product", "version": "1.2.3" };
-        });
-
-        test('no check in first 24h', function () {
-          class TestLicenseChecker extends window.Vaadin.LicenseCheckerClass {
-            check(productInfo) {
-              assert.fail(0, 0, "Check should not be called");
-            }
-          }
-          const checker = new TestLicenseChecker();
-          checker.maybeCheck(productInfo);
-          checker.maybeCheck(productInfo);
-          checker.maybeCheck(productInfo);
-        });
-
-        test('check after 24h of use', function () {
-          const checker = new LoggingLicenseChecker();
-          // 24h - 1s ago
-          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
-          checker.maybeCheck(productInfo);
-          assert.equal(checker.checkCalled, 0);
-          // 24h + 1s ago
-          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
-          checker.maybeCheck(productInfo);
-          assert.equal(checker.checkCalled, 1);
-        });
-        test('check every 24h', function () {
-          const checker = new LoggingLicenseChecker();
-          // 24h - 1s ago
-          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
-          checker.maybeCheck(productInfo);
-          assert.equal(checker.maybeCheckCalled, 1);
-          assert.equal(checker.checkCalled, 0);
-          // 24h + 1s ago
-          checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
-          checker.maybeCheck(productInfo);
-          assert.equal(checker.maybeCheckCalled, 2);
-          assert.equal(checker.checkCalled, 1);
-        });
+      test('check after 24h of use', function () {
+        const checker = new LoggingLicenseChecker();
+        // 24h - 1s ago
+        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
+        checker.maybeCheck(productInfo);
+        assert.equal(checker.checkCalled, 0);
+        // 24h + 1s ago
+        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
+        checker.maybeCheck(productInfo);
+        assert.equal(checker.checkCalled, 1);
+      });
+      test('check every 24h', function () {
+        const checker = new LoggingLicenseChecker();
+        // 24h - 1s ago
+        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 + 1000);
+        checker.maybeCheck(productInfo);
+        assert.equal(checker.maybeCheckCalled, 1);
+        assert.equal(checker.checkCalled, 0);
+        // 24h + 1s ago
+        checker.storage.setLastCheck(productInfo, new Date().getTime() - 24 * 60 * 60 * 1000 - 1000);
+        checker.maybeCheck(productInfo);
+        assert.equal(checker.maybeCheckCalled, 2);
+        assert.equal(checker.checkCalled, 1);
       });
     });
   </script>
