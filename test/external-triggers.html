@@ -59,7 +59,7 @@
           assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "test-product1", "version": "1.2.3" })], 1);
           assert.equal(window.Vaadin.LicenseChecker.checkCalled[JSON.stringify({ "name": "test-product2", "version": "2.2.2" })], 1);
           done();
-        }, 1);
+        }, 20);
       });
 
       test('JS API triggers check for all products', function (done) {
