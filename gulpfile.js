@@ -30,7 +30,7 @@ async function rebuild() {
 gulp.task('auto-amend-commit', async() => {
   const deps = [
     'src/vaadin-license-checker.js',
-    'srcvaadin-license-checker.tpl.html',
+    'src/vaadin-license-checker.tpl.html',
   ];
 
   const rc = await exec('git diff --name-only --cached');
