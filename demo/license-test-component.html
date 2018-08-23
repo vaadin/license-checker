@@ -1,5 +1,5 @@
 <link rel="import" href="../../polymer/polymer-element.html">
-<link rel="import" href="../../vaadin-development-mode-detector/vaadin-development-mode-detector.html">
+<link rel="import" href="../vaadin-license-checker.html">
 
 <dom-module id="license-test-component">
     <template>
@@ -26,5 +26,5 @@ class LicenseTestElement extends Polymer.Element {
 
 customElements.define(LicenseTestElement.is, LicenseTestElement);
 
-Vaadin.runIfDevelopmentMode('vaadin-license-checker', LicenseTestElement);
+Vaadin.developmentModeCallback['vaadin-license-checker'](LicenseTestElement);
 </script>
