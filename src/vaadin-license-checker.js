@@ -336,7 +336,7 @@ window.Vaadin.developmentModeCallback["vaadin-license-checker"] = function (cls)
 
   window.Vaadin.checkLicenses = function () {
     // Force checking of all licenses to avoid e.g. popups during presentations when the grace period just has ended
-    proProducts.forEach(productInfo => {
+    proProducts.forEach(function(productInfo){
       window.Vaadin.LicenseChecker.check(productInfo);
     });
   }
