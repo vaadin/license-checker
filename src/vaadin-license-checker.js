@@ -156,7 +156,7 @@ class VaadinLicenseChecker {
   }
 
   static get version() {
-    return '2.1.0-beta1';
+    return '2.1.0';
   }
 
   getForcedResponseKey(productInfo) {
