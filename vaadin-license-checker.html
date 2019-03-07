@@ -62,7 +62,7 @@
   Object.setPrototypeOf(_CustomElement.prototype, HTMLElement.prototype);
   Object.setPrototypeOf(_CustomElement, HTMLElement);
   var licenseBoxTemplate = document.createElement('template');
-  licenseBoxTemplate.innerHTML = '\n  <style>\n    :host {\n      font: 16px/1.625 -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";\n      position: fixed;\n      top: .5em;\n      right: .5em;\n      z-index: 10000;\n      cursor: pointer;\n      backface-visibility: hidden;\n    }\n\n    #content {\n      padding: 1em 1.5em;\n      margin: 0;\n      display: inline-block;\n      text-align: left;\n      font-size: inherit;\n      line-height: inherit;\n      font-weight: inherit;\n      -webkit-font-smoothing: antialiased;\n      -moz-osx-font-smoothin: grayscale;\n      white-space: nowrap;\n      letter-spacing: 0;\n      border-radius: 4px;\n      box-shadow: 0 2px 6px -1px hsla(214, 53%, 23%, 0.16), 0 8px 24px -4px hsla(214, 47%, 21%, 0.38);\n      color: #fff;\n    }\n\n    #content[type="needsvalidation"] {\n      background-color: hsl(3, 100%, 61%);\n    }\n\n    #content[type="ok"] {\n      background-color: hsl(145, 80%, 42%);\n    }\n\n    #content > svg {\n      display: none;\n      fill: currentColor;\n      stroke: currentColor 1px;\n      padding-left: 1.25em;\n    }\n\n    #content[type="needsvalidation"] > #link {\n      display: inline;\n    }\n\n    #content[type="ok"] > #close {\n      display: inline;\n      vertical-align: -.125em;\n    }\n  </style>\n\n  <div id="content">\n    <span></span>\n    <svg id="link" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">\n      <g id="external-link"><path d="M14 16v-11l-1 1v9h-12v-12h9l1-1h-11v14z"/><path d="M16 0h-5l1.8 1.8-6.8 6.8 1.4 1.4 6.8-6.8 1.8 1.8z"/></g>\n    </svg>\n    <svg id="close" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">\n      <g id="close-big"><path d="M16 0l-1 0.010-7 6.99-7-6.99-1-0.010v1l7 7-7 7v1h1l7-7 7 7h1v-1l-7-7 7-7v-1z"/></g>\n    </svg>\n  </div>\n';
+  licenseBoxTemplate.innerHTML = '\n  <style>\n    :host {\n      font: 16px/1.625 -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";\n      position: fixed;\n      top: .5em;\n      right: .5em;\n      z-index: 10000;\n      cursor: pointer;\n      backface-visibility: hidden;\n    }\n\n    #content {\n      padding: 1em 1.5em;\n      margin: 0;\n      display: flex;\n      flex-direction:row;\n      align-items: center;\n      text-align: left;\n      font-size: inherit;\n      line-height: inherit;\n      font-weight: inherit;\n      -webkit-font-smoothing: antialiased;\n      -moz-osx-font-smoothin: grayscale;\n      white-space: nowrap;\n      letter-spacing: 0;\n      border-radius: 5px;\n    }\n\n    #content[type="needsvalidation"] {\n      background-color: #FFD5D8;\n      color: #591217;\n      box-shadow: 0 0 20px 1px rgba(242,51,51,0.10);\n    }\n\n    #content[type="ok"] {\n      background-color: #B2F5C2;\n      color: #1C562A;\n      box-shadow: 0 0 20px 1px rgba(43,193,78,0.10);\n    }\n\n    #content > svg {\n      display: none;\n      fill: currentColor;\n      stroke: currentColor 1px;\n      padding-left: 1.25em;\n    }\n\n    #content[type="needsvalidation"] > #link {\n      display: inline;\n    }\n\n    #content[type="ok"] > #close {\n      display: inline;\n      vertical-align: -.125em;\n    }\n  </style>\n\n  <div id="content">\n    <div></div>\n    <svg id="link" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">\n      <g id="external-link"><path d="M8.6 3.5l3.5 3.5h-12.1v2h12.1l-3.5 3.5 1.4 1.4 6-5.9-6-5.9z"></path></g>\n    </svg>\n    <svg id="close" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">\n      <g id="close-big"><path d="M16 0l-1 0.010-7 6.99-7-6.99-1-0.010v1l7 7-7 7v1h1l7-7 7 7h1v-1l-7-7 7-7v-1z"></path></g>\n    </svg>\n  </div>\n';
   window.ShadyCSS && window.ShadyCSS.prepareTemplate(licenseBoxTemplate, 'vaadin-license-box');
 
   var LicenseBoxElement = function (_CustomElement2) {
@@ -98,7 +98,7 @@
           this._contentElement.removeAttribute('type');
         }
 
-        this._contentElement.firstElementChild.textContent = this._content;
+        this._contentElement.firstElementChild.innerHTML = this._content;
       }
     }, {
       key: 'type',
@@ -369,7 +369,7 @@
         var instance = document.createElement("vaadin-license-box");
         instance.id = this.id(productInfo);
         instance.type = "needsvalidation";
-        instance.content = "Click to validate your Vaadin Subscription";
+        instance.content = "This application is using components which are part of a Vaadin subscription.<br>Click here to get a trial or validate your subscription";
         document.body.appendChild(instance);
         instance.addEventListener("click", function () {
           window.open("https://vaadin.com/pro/validate-license", "_blank");

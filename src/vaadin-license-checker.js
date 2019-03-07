@@ -14,7 +14,9 @@ licenseBoxTemplate.innerHTML = `
     #content {
       padding: 1em 1.5em;
       margin: 0;
-      display: inline-block;
+      display: flex;
+      flex-direction:row;
+      align-items: center;
       text-align: left;
       font-size: inherit;
       line-height: inherit;
@@ -23,17 +25,19 @@ licenseBoxTemplate.innerHTML = `
       -moz-osx-font-smoothin: grayscale;
       white-space: nowrap;
       letter-spacing: 0;
-      border-radius: 4px;
-      box-shadow: 0 2px 6px -1px hsla(214, 53%, 23%, 0.16), 0 8px 24px -4px hsla(214, 47%, 21%, 0.38);
-      color: #fff;
+      border-radius: 5px;
     }
 
     #content[type="needsvalidation"] {
-      background-color: hsl(3, 100%, 61%);
+      background-color: #FFD5D8;
+      color: #591217;
+      box-shadow: 0 0 20px 1px rgba(242,51,51,0.10);
     }
 
     #content[type="ok"] {
-      background-color: hsl(145, 80%, 42%);
+      background-color: #B2F5C2;
+      color: #1C562A;
+      box-shadow: 0 0 20px 1px rgba(43,193,78,0.10);
     }
 
     #content > svg {
@@ -54,12 +58,12 @@ licenseBoxTemplate.innerHTML = `
   </style>
 
   <div id="content">
-    <span></span>
+    <div></div>
     <svg id="link" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
-      <g id="external-link"><path d="M14 16v-11l-1 1v9h-12v-12h9l1-1h-11v14z"/><path d="M16 0h-5l1.8 1.8-6.8 6.8 1.4 1.4 6.8-6.8 1.8 1.8z"/></g>
+      <g id="external-link"><path d="M8.6 3.5l3.5 3.5h-12.1v2h12.1l-3.5 3.5 1.4 1.4 6-5.9-6-5.9z"></path></g>
     </svg>
     <svg id="close" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
-      <g id="close-big"><path d="M16 0l-1 0.010-7 6.99-7-6.99-1-0.010v1l7 7-7 7v1h1l7-7 7 7h1v-1l-7-7 7-7v-1z"/></g>
+      <g id="close-big"><path d="M16 0l-1 0.010-7 6.99-7-6.99-1-0.010v1l7 7-7 7v1h1l7-7 7 7h1v-1l-7-7 7-7v-1z"></path></g>
     </svg>
   </div>
 `;
@@ -88,7 +92,7 @@ class LicenseBoxElement extends HTMLElement {
       this._contentElement.removeAttribute('type');
     }
 
-    this._contentElement.firstElementChild.textContent = this._content;
+    this._contentElement.firstElementChild.innerHTML = this._content;
   }
 
   get type() {
@@ -302,7 +306,7 @@ class LicenseValidationNeededNotifier {
     const instance = document.createElement("vaadin-license-box");
     instance.id = this.id(productInfo);
     instance.type = "needsvalidation";
-    instance.content = "Click to validate your Vaadin Subscription";
+    instance.content = "This application is using components which are part of a Vaadin subscription.<br>Click here to get a trial or validate your subscription";
     document.body.appendChild(instance);
     instance.addEventListener("click", function () {
       window.open("https://vaadin.com/pro/validate-license", "_blank");
