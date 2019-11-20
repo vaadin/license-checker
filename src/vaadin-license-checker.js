@@ -155,6 +155,7 @@ class VaadinLicenseChecker {
     this.validationNeededNotifier = new LicenseValidationNeededNotifier();
     this.storage = new LicenseCheckerStorage();
     this.checkInterval = 1000 * 60 * 60 * 24;
+    this.firstCheckDelay = 1000 * 60 * 1;
     this.logger = new LicenseCheckerLogger();
     this.url = "https://tools.vaadin.com/vaadin-license-server/licenses/pro";
   }
@@ -180,8 +181,8 @@ class VaadinLicenseChecker {
     const now = new Date().getTime();
     const lastCheck = this.storage.getLastCheck(productInfo);
     if (!lastCheck) {
-      this.logger.debug("Deferring first check until " + new Date(now + this.checkInterval));
-      this.storage.setLastCheck(productInfo, now);
+      this.logger.debug("Deferring first check until " + new Date(now + this.firstCheckDelay));
+      this.storage.setLastCheck(productInfo, now - this.checkInterval + this.firstCheckDelay);
       return;
     } else {
       const sinceLastCheck = Math.round((now - lastCheck) / 1000);
