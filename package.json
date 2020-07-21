@@ -17,7 +17,7 @@
     "bower": "^1.8.8",
     "fs-extra": "^9.0.0",
     "gulp": "^4.0.2",
-    "gulp-cli": "*",
+    "gulp-cli": "^2.3.0",
     "husky": "^4.2.5",
     "rollup": "^2.22.1",
     "web-component-tester": "^6.5.0"
