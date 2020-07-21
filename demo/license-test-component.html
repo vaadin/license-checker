@@ -22,9 +22,17 @@ class LicenseTestElement extends Polymer.Element {
       }
     };
   }
+
+  static _finalizeClass() {
+    super._finalizeClass();
+
+    const devModeCallback = window.Vaadin.developmentModeCallback;
+    const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
+    if (typeof licenseChecker === 'function') {
+      licenseChecker(LicenseTestElement);
+    }
+  }
 }
 
 customElements.define(LicenseTestElement.is, LicenseTestElement);
-
-Vaadin.developmentModeCallback['vaadin-license-checker'](LicenseTestElement);
 </script>
