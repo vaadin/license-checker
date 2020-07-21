@@ -19,6 +19,6 @@
     "polymer": "Polymer/polymer#^2.0.0",
     "web-component-tester": "^6.0.0",
     "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0",
-    "webcomponentsjs": "1.2.4"
+    "webcomponentsjs": "^1.0.0"
   }
 }
