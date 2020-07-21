@@ -14,6 +14,7 @@ const config = [
       babel({
         babelHelpers: 'bundled',
         plugins: [
+          '@babel/transform-block-scoping',
           '@babel/transform-classes',
           '@babel/transform-template-literals'
         ]
