@@ -22,11 +22,15 @@
     "rollup": "^2.22.1",
     "web-component-tester": "^6.5.0"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "gulp auto-amend-commit"
+    }
+  },
   "scripts": {
     "test": "wct --plugin sauce",
     "build": "gulp rebuild",
-    "transpile": "rollup -c",
-    "precommit": "gulp auto-amend-commit"
+    "transpile": "rollup -c"
   },
   "files": [
     "vaadin-license-checker.js"
