@@ -4,7 +4,7 @@ A web component validating licenses for the commercial Vaadin Pro Tools
 ## Running demo app
 * Get everything needed and start server
 ```
-git clone git@github.com:vaadin/license-checker.git
+git clone https://github.com/vaadin/license-checker.git
 cd license-checker
 npm install
 bower install
