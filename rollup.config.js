@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 
 const config = [
   // Bundle and transpile the sources so that they can be executed
@@ -12,12 +12,11 @@ const config = [
     },
     plugins: [
       babel({
+        babelHelpers: 'bundled',
         plugins: [
-          'external-helpers',
-          'transform-es2015-block-scoping',
-          'transform-custom-element-classes',
-          'transform-es2015-classes',
-          'transform-es2015-template-literals'
+          '@babel/transform-block-scoping',
+          '@babel/transform-classes',
+          '@babel/transform-template-literals'
         ]
       }),
     ]
